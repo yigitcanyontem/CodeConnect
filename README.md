@@ -78,6 +78,10 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
+### Project Architecture
+ <a href="https://github.com/yigitcanyontem/CodeConnect">
+    <img src="files/CodeConnect Architecture.png" alt="Logo" width="600px" height="auto">
+  </a>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
