@@ -1,13 +1,13 @@
-package org.yigitcanyontem.codeconnect;
+package org.yigitcanyontem.user;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class CodeConnectApplication {
+public class UserApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(CodeConnectApplication.class, args);
+        SpringApplication.run(UserApplication.class, args);
     }
 
 }
