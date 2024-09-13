@@ -5,10 +5,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.yigitcanyontem.clients.FeignConfiguration;
 import org.yigitcanyontem.clients.users.dto.UsersDto;
 
-@FeignClient(name = "users", configuration = FeignConfiguration.class)
+@FeignClient(name = "users")
 public interface UsersClient {
     @GetMapping(path = "api/v1/user/hello")
     String testUserRole();
