@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.yigitcanyontem.clients.users.UsersClient;
 import org.yigitcanyontem.user.domain.Users;
 import org.yigitcanyontem.user.security.UsersPrincipal;
 
@@ -17,6 +18,8 @@ import org.yigitcanyontem.user.security.UsersPrincipal;
 @RequestMapping("api/v1/user")
 @RequiredArgsConstructor
 public class UsersController {
+    private final UsersClient usersClient;
+
     @GetMapping("/hello")
     @PreAuthorize("hasRole('USER')")
     public String testUserRole(){

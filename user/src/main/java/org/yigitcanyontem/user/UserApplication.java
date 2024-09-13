@@ -2,7 +2,11 @@ package org.yigitcanyontem.user;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
+@EnableFeignClients(
+        basePackageClasses = org.yigitcanyontem.clients.users.UsersClient.class
+)
 @SpringBootApplication
 public class UserApplication {
 
