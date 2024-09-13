@@ -2,14 +2,9 @@ package org.yigitcanyontem.user.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.yigitcanyontem.user.dto.UserRegisterDTO;
-import org.yigitcanyontem.user.enums.Role;
-
+import org.yigitcanyontem.clients.users.dto.UserRegisterDTO;
+import org.yigitcanyontem.clients.users.enums.Role;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
 
 @Getter
 @Setter
@@ -18,7 +13,7 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 @Builder
-public class Users implements UserDetails {
+public class Users {
     @Id
     @SequenceGenerator(
             name = "users_id_sequence",
@@ -41,25 +36,5 @@ public class Users implements UserDetails {
     public Users(UserRegisterDTO userRegisterDTO) {
         this.username = userRegisterDTO.getUsername();
         this.email = userRegisterDTO.getEmail();
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return role.getAuthorities();
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return UserDetails.super.isAccountNonExpired();
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return UserDetails.super.isAccountNonLocked();
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return UserDetails.super.isCredentialsNonExpired();
     }
 }

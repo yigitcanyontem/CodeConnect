@@ -11,18 +11,18 @@ spring:
       enabled: false
     gateway:
       routes:
-        - id: user
-          uri: lb://USER
+        - id: users
+          uri: lb://USERS
           predicates:
             - Path=/api/v1/user/**
-        - id: notification
-          uri: lb://NOTIFICATION
-          predicates:
-            - Path=/api/v1/notification/**
         - id: auth
           uri: lb://AUTH
           predicates:
             - Path=/api/v1/auth/**
+        - id: notification
+          uri: lb://NOTIFICATION
+          predicates:
+            - Path=/api/v1/notification/**
 
 management:
   tracing:

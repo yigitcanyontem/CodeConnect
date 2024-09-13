@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8084
 
 spring:
   cloud:
@@ -9,10 +9,17 @@ spring:
     base-url: http://localhost:9411
 
   application:
-    name: users
+    name: auth
+    security:
+      jwt:
+        secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+        expiration: 86400000 # a day
+        refresh-token:
+          expiration: 604800000 # 7 days
+
   datasource:
     username: 'postgres'
-    url: jdbc:postgresql://localhost:5432/users
+    url: jdbc:postgresql://localhost:5432/auth
     password: 'password'
   jpa:
     hibernate:
@@ -33,7 +40,7 @@ management:
 
 eureka:
   instance:
-    appname: users
+    appname: auth
   client:
     enabled: true
     serviceUrl:

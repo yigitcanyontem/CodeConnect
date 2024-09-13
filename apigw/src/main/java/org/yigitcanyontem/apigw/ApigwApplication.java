@@ -2,7 +2,15 @@ package org.yigitcanyontem.apigw;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
+@EnableFeignClients(
+        basePackageClasses = {
+                org.yigitcanyontem.clients.users.UsersClient.class,
+                org.yigitcanyontem.clients.notification.NotificationClient.class,
+                org.yigitcanyontem.clients.auth.AuthClient.class
+        }
+)
 @SpringBootApplication
 public class ApigwApplication {
 
