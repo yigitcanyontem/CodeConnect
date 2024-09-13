@@ -1,35 +1,26 @@
 server:
-  port: 8080
+  port: 8082
 
 spring:
   cloud:
     compatibility-verifier:
       enabled: false
-  zipkin:
-    base-url: http://localhost:9411
-
   application:
-    name: user
-    security:
-      jwt:
-        secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
-        expiration: 86400000 # a day
-        refresh-token:
-          expiration: 604800000 # 7 days
-
+    name: notification
   datasource:
     username: 'postgres'
-    url: jdbc:postgresql://localhost:5432/users
+    url: jdbc:postgresql://localhost:5432/notification
     password: 'password'
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
     show-sql: false
-
+  zipkin:
+    base-url: http://localhost:9411
 
 management:
   tracing:
@@ -37,10 +28,9 @@ management:
     sampler:
       probability: 1.0
 
-
 eureka:
   instance:
-    appname: user
+    appname: notification
   client:
     enabled: true
     serviceUrl:

@@ -5,7 +5,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @EnableFeignClients(
-        basePackageClasses = org.yigitcanyontem.clients.users.UsersClient.class
+        basePackageClasses = {
+                org.yigitcanyontem.clients.users.UsersClient.class,
+                org.yigitcanyontem.clients.notification.NotificationClient.class
+        }
 )
 @SpringBootApplication
 public class UserApplication {
