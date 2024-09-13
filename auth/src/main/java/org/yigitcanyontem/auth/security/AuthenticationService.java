@@ -109,7 +109,8 @@ public class AuthenticationService {
         throw new UsernameNotFoundException("User not found..!!");
     }
 
-    public UsersDto validateToken(@RequestBody String token) {
+    public UsersDto validateToken(String token) {
+        token = token.replace("Bearer ", "");
         String username = jwtService.extractUsername(token);
         UsersPrincipal userDetails = userDetailsService.loadUserByUsername(username);
         if (jwtService.validateToken(token, userDetails)) {

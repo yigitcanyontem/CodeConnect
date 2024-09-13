@@ -1,16 +1,14 @@
 package org.yigitcanyontem.clients.users;
 
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.http.HttpHeaders;
+import org.springframework.web.bind.annotation.*;
 import org.yigitcanyontem.clients.users.dto.UsersDto;
 
 @FeignClient(name = "users")
 public interface UsersClient {
     @GetMapping(path = "api/v1/user/hello")
-    String testUserRole();
+    UsersDto testUserRole(@RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader);
 
     @GetMapping(path = "api/v1/user/username/{username}")
     UsersDto getUsersByUsername(@PathVariable("username") String username);

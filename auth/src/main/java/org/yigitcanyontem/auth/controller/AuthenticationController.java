@@ -3,10 +3,7 @@ package org.yigitcanyontem.auth.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.yigitcanyontem.auth.security.AuthenticationService;
 import org.yigitcanyontem.clients.users.dto.AuthenticationRequest;
 import org.yigitcanyontem.clients.users.dto.AuthenticationResponse;
@@ -35,7 +32,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/validate-token")
-    public ResponseEntity<UsersDto> validateToken(@RequestBody String token) {
+    public ResponseEntity<UsersDto> validateToken(@RequestParam("token") String token) {
         return ResponseEntity.ok(authenticationService.validateToken(token));
     }
 }

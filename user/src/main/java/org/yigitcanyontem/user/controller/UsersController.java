@@ -2,7 +2,9 @@ package org.yigitcanyontem.user.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
+import org.yigitcanyontem.clients.auth.AuthClient;
 import org.yigitcanyontem.clients.notification.NotificationClient;
 import org.yigitcanyontem.clients.notification.NotificationCreateDto;
 import org.yigitcanyontem.clients.users.UsersClient;
@@ -16,16 +18,18 @@ import org.yigitcanyontem.user.service.UsersService;
 public class UsersController {
     private final UsersService usersService;
     private final NotificationClient notificationClient;
-
+    private final AuthClient authClient;
     @GetMapping("/hello")
-    public String testUserRole(){
+    public UsersDto testUserRole(@RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken) {
+        UsersDto user = authClient.validateToken(jwtToken).getBody();
         notificationClient.sendNotification(
                 new NotificationCreateDto(
                         1,
                         "message"
                 )
         );
-        return "Hello User";
+        assert user != null;
+        return getUserByEmail(user.getEmail());
     }
 
     @GetMapping("username/{username}")
