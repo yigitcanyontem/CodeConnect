@@ -1,10 +1,11 @@
 package org.yigitcanyontem.clients.notification;
 
-import java.time.LocalDateTime;
+
+import java.util.Date;
 
 public record NotificationDto(
         String message,
         boolean isRead,
-        LocalDateTime createdAt
+        Date createdAt
 ) {
 }

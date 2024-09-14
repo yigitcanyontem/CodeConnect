@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.yigitcanyontem.clients.cache.CacheClient;
@@ -21,8 +20,13 @@ public class UsersDetailsService implements UserDetailsService {
 
     @Override
     public UsersPrincipal loadUserByUsername(String email) throws BadCredentialsException, AccessDeniedException {
-        UsersDto user = cacheClient.getUserByEmail(email).getBody();
+        UsersDto user = null;
 
+        try {
+            user = cacheClient.getUserByEmail(email).getBody();
+        }catch (Exception e){
+            log.error("Error while fetching user from cache: {}", e.getMessage());
+        }
         if (user == null) {
             user = usersClient.getUserByEmail(email);
         }
@@ -32,7 +36,6 @@ public class UsersDetailsService implements UserDetailsService {
             return null;
         }
 
-        log.info("User logged in with email: {}", email);
         return new UsersPrincipal(user);
     }
 }

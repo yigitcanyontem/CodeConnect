@@ -3,7 +3,7 @@ package org.yigitcanyontem.clients.users.dto;
 import lombok.*;
 import org.yigitcanyontem.clients.users.enums.Role;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -17,7 +17,7 @@ public class UsersDto {
     private String password;
     private Role role;
     private boolean enabled;
-    private LocalDateTime createdAt;
+    private Date createdAt;
 
     public UsersDto(UserRegisterDTO userRegisterDTO) {
         this.username = userRegisterDTO.getUsername();

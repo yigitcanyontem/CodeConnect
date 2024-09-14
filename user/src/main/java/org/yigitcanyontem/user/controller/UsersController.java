@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.yigitcanyontem.clients.auth.AuthClient;
 import org.yigitcanyontem.clients.notification.NotificationClient;
 import org.yigitcanyontem.clients.notification.NotificationCreateDto;
-import org.yigitcanyontem.clients.users.UsersClient;
+import org.yigitcanyontem.clients.users.dto.UserRegisterDTO;
 import org.yigitcanyontem.clients.users.dto.UsersDto;
 import org.yigitcanyontem.user.service.UsersService;
 
@@ -19,6 +19,7 @@ public class UsersController {
     private final UsersService usersService;
     private final NotificationClient notificationClient;
     private final AuthClient authClient;
+
     @GetMapping("/hello")
     public UsersDto testUserRole(@RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken) {
         UsersDto user = authClient.validateToken(jwtToken).getBody();
@@ -45,6 +46,11 @@ public class UsersController {
     @PostMapping()
     public UsersDto save(@RequestBody UsersDto user) {
          return usersService.save(user);
+    }
+
+    @PostMapping("exists")
+    public boolean userExists(@RequestBody UserRegisterDTO user) {
+        return usersService.userExists(user);
     }
 
 }

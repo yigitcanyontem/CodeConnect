@@ -3,6 +3,7 @@ package org.yigitcanyontem.user.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.yigitcanyontem.clients.users.dto.UserRegisterDTO;
 import org.yigitcanyontem.clients.users.dto.UsersDto;
 import org.yigitcanyontem.user.domain.Users;
 import org.yigitcanyontem.user.repository.UsersRepository;
@@ -51,5 +52,9 @@ public class UsersService {
          newUser = usersRepository.saveAndFlush(newUser);
          user.setId(newUser.getId());
          return user;
+    }
+
+    public boolean userExists(UserRegisterDTO user) {
+        return usersRepository.existsByEmailOrUsername(user.getEmail(), user.getUsername());
     }
 }

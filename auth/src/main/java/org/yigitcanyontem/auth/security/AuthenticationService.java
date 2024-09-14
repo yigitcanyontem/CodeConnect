@@ -1,6 +1,8 @@
 package org.yigitcanyontem.auth.security;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,11 +19,13 @@ import org.yigitcanyontem.clients.users.enums.Role;
 import org.yigitcanyontem.clients.users.enums.TokenType;
 
 import javax.security.auth.login.LoginException;
+import java.util.Date;
 import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
+    private static final Logger log = LoggerFactory.getLogger(AuthenticationService.class);
     private final UsersClient usersClient;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
@@ -47,7 +51,7 @@ public class AuthenticationService {
         String refreshToken = jwtService.generateRefreshToken(user);
         revokeAllUserTokens(user);
         saveUserToken(user, jwtToken);
-        cacheClient.saveOrUpdateUser(user, request.getUsername());
+        saveUserToCache(user, request.getUsername());
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
@@ -78,19 +82,25 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse register(UserRegisterDTO request) {
+        boolean userExists = usersClient.userExists(request);
+
+        if (userExists) {
+            throw new IllegalArgumentException("User already exists");
+        }
+
         UsersDto user = UsersDto.builder()
                 .email(request.getEmail())
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
                 .enabled(true)
-                .createdAt(LocalDateTime.now())
+                .createdAt(Date.from(LocalDateTime.now().toInstant(java.time.ZoneOffset.UTC)))
                 .build();
         UsersDto savedUser = usersClient.save(user);
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
         saveUserToken(savedUser, jwtToken);
-        cacheClient.saveOrUpdateUser(user, user.getEmail());
+        saveUserToCache(user, user.getEmail());
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
@@ -106,6 +116,14 @@ public class AuthenticationService {
             return userDetails.user();
         } else {
             return null;
+        }
+    }
+
+    private void saveUserToCache(UsersDto user, String email) {
+        try {
+            cacheClient.saveOrUpdateUser(user, email);
+        }catch (Exception e){
+            log.error("Error while saving user to cache", e);
         }
     }
 

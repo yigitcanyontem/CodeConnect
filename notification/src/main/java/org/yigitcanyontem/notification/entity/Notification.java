@@ -8,7 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+
+import java.util.Date;
 
 @Data
 @Builder
@@ -31,6 +32,6 @@ public class Notification {
     private Integer customerId;
     private String message;
     private boolean isRead;
-    private LocalDateTime createdAt;
+    private Date createdAt;
 
 }

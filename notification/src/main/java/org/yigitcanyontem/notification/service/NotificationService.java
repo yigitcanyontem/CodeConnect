@@ -8,6 +8,7 @@ import org.yigitcanyontem.notification.entity.Notification;
 import org.yigitcanyontem.notification.repository.NotificationRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.time.LocalDateTime;
 
 @Service
@@ -28,7 +29,7 @@ public class NotificationService {
         Notification notification = Notification.builder()
                 .customerId(notificationCreateDto.customerId())
                 .message(notificationCreateDto.message())
-                .createdAt(LocalDateTime.now())
+                .createdAt(Date.from(LocalDateTime.now().toInstant(java.time.ZoneOffset.UTC)))
                 .isRead(false)
                 .build();
 

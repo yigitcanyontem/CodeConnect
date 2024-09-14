@@ -1,6 +1,7 @@
 package org.yigitcanyontem.cache.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -14,6 +15,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CacheService{
     private final UsersHashRepository usersHashRepository;
 
@@ -24,8 +26,8 @@ public class CacheService{
         return usersHash.map(hash -> new UsersDto(
                 hash.getId(),
                 hash.getUsername(),
-                null,
                 hash.getEmail(),
+                null,
                 Role.valueOf(hash.getRole()),
                 hash.isEnabled(),
                 hash.getCreatedAt()
@@ -34,7 +36,7 @@ public class CacheService{
 
     // Adding or updating a user and updating cache
     public void saveOrUpdateUser(UsersDto user) {
-        usersHashRepository.save(new UsersHash(
+        UsersHash usersHash = usersHashRepository.save(new UsersHash(
                 user.getId(),
                 user.getUsername(),
                 null,
@@ -43,10 +45,12 @@ public class CacheService{
                 user.isEnabled(),
                 user.getCreatedAt()
         ));
+        log.info("User saved with id: {}", usersHash.getId());
     }
 
     // Deleting user from the cache and repository
     public void deleteUserByEmail(String email) {
         usersHashRepository.deleteByEmail(email);
+        log.info("User deleted with email: {}", email);
     }
 }

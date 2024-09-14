@@ -3,6 +3,7 @@ package org.yigitcanyontem.clients.users;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
+import org.yigitcanyontem.clients.users.dto.UserRegisterDTO;
 import org.yigitcanyontem.clients.users.dto.UsersDto;
 
 @FeignClient(name = "users")
@@ -18,4 +19,8 @@ public interface UsersClient {
 
     @PostMapping(path = "api/v1/user")
     UsersDto save(@RequestBody UsersDto user);
+
+    @PostMapping(path = "api/v1/user/exists")
+    boolean userExists(UserRegisterDTO request);
+
 }
