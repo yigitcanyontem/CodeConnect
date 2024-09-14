@@ -1,10 +1,10 @@
 package org.yigitcanyontem.auth.security;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.yigitcanyontem.clients.cache.CacheClient;
@@ -18,23 +18,21 @@ public class UsersDetailsService implements UserDetailsService {
 
     private final UsersClient usersClient;
     private final CacheClient cacheClient;
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public UsersPrincipal loadUserByUsername(String email) throws BadCredentialsException, AccessDeniedException {
-        UsersDto users = objectMapper.convertValue(cacheClient.getValueFromCache("users-" + email), UsersDto.class);
+        UsersDto user = cacheClient.getUserByEmail(email).getBody();
 
-        if (users == null) {
-            users = usersClient.getUserByEmail(email);
+        if (user == null) {
+            user = usersClient.getUserByEmail(email);
         }
 
-        if (users == null) {
+        if (user == null) {
             log.info("User not found with email: {}", email);
             return null;
         }
 
-        cacheClient.putValueInCache("users-" + email, users);
         log.info("User logged in with email: {}", email);
-        return new UsersPrincipal(users);
+        return new UsersPrincipal(user);
     }
 }

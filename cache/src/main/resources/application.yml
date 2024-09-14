@@ -5,7 +5,10 @@ spring:
   application:
     name: cache
   cache:
-    type: caffeine
+    type: redis
+    host: localhost
+    port: 6379
+    timeout: 6000
   cloud:
     compatibility-verifier:
       enabled: false

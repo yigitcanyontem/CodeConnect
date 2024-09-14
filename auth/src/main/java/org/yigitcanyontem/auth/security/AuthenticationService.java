@@ -15,6 +15,7 @@ import org.yigitcanyontem.clients.users.dto.UserRegisterDTO;
 import org.yigitcanyontem.clients.users.dto.UsersDto;
 import org.yigitcanyontem.clients.users.enums.Role;
 import org.yigitcanyontem.clients.users.enums.TokenType;
+
 import javax.security.auth.login.LoginException;
 import java.time.LocalDateTime;
 
@@ -46,7 +47,7 @@ public class AuthenticationService {
         String refreshToken = jwtService.generateRefreshToken(user);
         revokeAllUserTokens(user);
         saveUserToken(user, jwtToken);
-        cacheClient.putValueInCache("users-" + user.getEmail(), user);
+        cacheClient.saveOrUpdateUser(user, request.getUsername());
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
@@ -89,7 +90,7 @@ public class AuthenticationService {
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
         saveUserToken(savedUser, jwtToken);
-        cacheClient.putValueInCache("users-" + user.getEmail(), user);
+        cacheClient.saveOrUpdateUser(user, user.getEmail());
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)

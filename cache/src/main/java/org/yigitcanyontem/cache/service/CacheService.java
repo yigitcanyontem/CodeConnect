@@ -1,40 +1,52 @@
 package org.yigitcanyontem.cache.service;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
+import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.yigitcanyontem.cache.hash.UsersHash;
+import org.yigitcanyontem.cache.repository.UsersHashRepository;
+import org.yigitcanyontem.clients.users.dto.UsersDto;
+import org.yigitcanyontem.clients.users.enums.Role;
+
+import java.util.Optional;
 
 @Service
-@Slf4j
-public class CacheService {
+@RequiredArgsConstructor
+public class CacheService{
+    private final UsersHashRepository usersHashRepository;
 
-    @Autowired
-    private CacheManager cacheManager;
+    // Fetching users with caching
+    public UsersDto getUserByEmail(String email) {
+        Optional<UsersHash> usersHash = usersHashRepository.findByEmail(email);
 
-    public void putValueInCache(String key, Object value) {
-        Cache cache = cacheManager.getCache("CodeConnectCache");
-        if (cache != null) {
-            cache.put(key, value);
-            log.info("Value with key {} is put in cache", key);
-        }
+        return usersHash.map(hash -> new UsersDto(
+                hash.getId(),
+                hash.getUsername(),
+                null,
+                hash.getEmail(),
+                Role.valueOf(hash.getRole()),
+                hash.isEnabled(),
+                hash.getCreatedAt()
+        )).orElse(null);
     }
 
-    public Object getValueFromCache(String key) {
-        Cache cache = cacheManager.getCache("CodeConnectCache");
-        if (cache != null) {
-            log.info("Value with key {} is retrieved from cache", key);
-            return cache.get(key, Object.class);
-        }
-        return null;
+    // Adding or updating a user and updating cache
+    public void saveOrUpdateUser(UsersDto user) {
+        usersHashRepository.save(new UsersHash(
+                user.getId(),
+                user.getUsername(),
+                null,
+                user.getEmail(),
+                user.getRole().toString(),
+                user.isEnabled(),
+                user.getCreatedAt()
+        ));
     }
 
-    public void evictValueFromCache(String key) {
-        Cache cache = cacheManager.getCache("CodeConnectCache");
-        if (cache != null) {
-            cache.evict(key);
-            log.info("Value with key {} is evicted from cache", key);
-        }
+    // Deleting user from the cache and repository
+    public void deleteUserByEmail(String email) {
+        usersHashRepository.deleteByEmail(email);
     }
 }

@@ -1,18 +1,21 @@
 package org.yigitcanyontem.clients.cache;
 
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.yigitcanyontem.clients.users.dto.UsersDto;
 
 @FeignClient(name = "cache")
 public interface CacheClient {
-    @PostMapping("/api/v1/cache/{key}")
-    void putValueInCache(@PathVariable("key") String key, @RequestBody Object value);
+    @GetMapping("api/v1/cache/users/{email}")
+    ResponseEntity<UsersDto> getUserByEmail(@PathVariable("email") String email);
 
-    @GetMapping("/api/v1/cache/{key}")
-    Object getValueFromCache(@PathVariable("key") String key);
+    @PostMapping("api/v1/cache/users")
+    ResponseEntity<UsersDto> saveOrUpdateUser(@RequestBody UsersDto user, @RequestParam("email") String email);
 
-    @DeleteMapping("/api/v1/cache/{key}")
-    void evictValueFromCache(@PathVariable("key") String key);
+    @DeleteMapping("api/v1/cache/users/{email}")
+    ResponseEntity<Void> deleteUserByEmail(@PathVariable("email") Integer id);
+
 }
 
 
