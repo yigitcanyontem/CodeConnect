@@ -7,6 +7,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.yigitcanyontem.amqp.RabbitMQMessageProducer;
 import org.yigitcanyontem.auth.domain.Token;
 import org.yigitcanyontem.auth.repository.TokenRepository;
 import org.yigitcanyontem.clients.cache.CacheClient;
@@ -33,6 +34,7 @@ public class AuthenticationService {
     private final TokenRepository tokenRepository;
     private final UsersDetailsService userDetailsService;
     private final CacheClient cacheClient;
+    private final RabbitMQMessageProducer rabbitMQMessageProducer;
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) throws LoginException {
         authenticationManager.authenticate(
@@ -51,7 +53,7 @@ public class AuthenticationService {
         String refreshToken = jwtService.generateRefreshToken(user);
         revokeAllUserTokens(user);
         saveUserToken(user, jwtToken);
-        saveUserToCache(user, request.getUsername());
+        saveUserToCache(user);
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
@@ -100,7 +102,7 @@ public class AuthenticationService {
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
         saveUserToken(savedUser, jwtToken);
-        saveUserToCache(user, user.getEmail());
+        saveUserToCache(user);
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
@@ -119,9 +121,12 @@ public class AuthenticationService {
         }
     }
 
-    private void saveUserToCache(UsersDto user, String email) {
+    private void saveUserToCache(UsersDto user) {
         try {
-            cacheClient.saveOrUpdateUser(user, email);
+            rabbitMQMessageProducer.publish(user,
+                    "internal.exchange",
+                    "internal.cache.routing-key"
+            );
         }catch (Exception e){
             log.error("Error while saving user to cache", e);
         }

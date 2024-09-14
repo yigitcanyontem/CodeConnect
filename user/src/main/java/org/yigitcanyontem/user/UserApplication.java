@@ -12,8 +12,12 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
                 org.yigitcanyontem.clients.cache.CacheClient.class
         }
 )
-@SpringBootApplication
-public class UserApplication {
+@SpringBootApplication(
+        scanBasePackages = {
+                "org.yigitcanyontem.user",
+                "org.yigitcanyontem.amqp"
+        }
+)public class UserApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(UserApplication.class, args);

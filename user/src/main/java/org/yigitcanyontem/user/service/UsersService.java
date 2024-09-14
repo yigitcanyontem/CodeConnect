@@ -3,6 +3,8 @@ package org.yigitcanyontem.user.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.yigitcanyontem.amqp.RabbitMQMessageProducer;
+import org.yigitcanyontem.clients.notification.NotificationCreateDto;
 import org.yigitcanyontem.clients.users.dto.UserRegisterDTO;
 import org.yigitcanyontem.clients.users.dto.UsersDto;
 import org.yigitcanyontem.user.domain.Users;
@@ -13,6 +15,7 @@ import org.yigitcanyontem.user.repository.UsersRepository;
 @RequiredArgsConstructor
 public class UsersService {
     private final UsersRepository usersRepository;
+    private final RabbitMQMessageProducer rabbitMQMessageProducer;
 
     public UsersDto getUsersByUsername(String username) {
         Users user = usersRepository.findByUsername(username);
@@ -51,6 +54,12 @@ public class UsersService {
                 .build();
          newUser = usersRepository.saveAndFlush(newUser);
          user.setId(newUser.getId());
+
+        rabbitMQMessageProducer.publish(
+                new NotificationCreateDto(user.getId(), "User created"),
+                "internal.exchange",
+                "internal.notifications.routing-key"
+        );
          return user;
     }
 

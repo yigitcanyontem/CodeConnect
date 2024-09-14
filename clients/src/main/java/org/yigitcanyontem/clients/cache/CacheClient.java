@@ -11,7 +11,7 @@ public interface CacheClient {
     ResponseEntity<UsersDto> getUserByEmail(@PathVariable("email") String email);
 
     @PostMapping("api/v1/cache/users")
-    ResponseEntity<UsersDto> saveOrUpdateUser(@RequestBody UsersDto user, @RequestParam("email") String email);
+    ResponseEntity<UsersDto> saveOrUpdateUser(@RequestBody UsersDto user);
 
     @DeleteMapping("api/v1/cache/users/{email}")
     ResponseEntity<Void> deleteUserByEmail(@PathVariable("email") Integer id);

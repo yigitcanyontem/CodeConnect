@@ -20,19 +20,6 @@ public class UsersController {
     private final NotificationClient notificationClient;
     private final AuthClient authClient;
 
-    @GetMapping("/hello")
-    public UsersDto testUserRole(@RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken) {
-        UsersDto user = authClient.validateToken(jwtToken).getBody();
-        notificationClient.sendNotification(
-                new NotificationCreateDto(
-                        1,
-                        "message"
-                )
-        );
-        assert user != null;
-        return getUserByEmail(user.getEmail());
-    }
-
     @GetMapping("username/{username}")
     public UsersDto getUsersByUsername(@PathVariable("username") String username) {
         return usersService.getUsersByUsername(username);

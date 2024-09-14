@@ -20,7 +20,7 @@ public class CacheController {
     }
 
     @PostMapping("/users")
-    public ResponseEntity<Void> saveOrUpdateUser(@RequestBody UsersDto user, @RequestParam("email") String email){
+    public ResponseEntity<Void> saveOrUpdateUser(@RequestBody UsersDto user){
         cacheService.saveOrUpdateUser(user);
         return ResponseEntity.ok().build();
     }
