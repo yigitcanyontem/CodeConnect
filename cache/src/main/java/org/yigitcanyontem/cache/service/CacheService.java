@@ -27,7 +27,7 @@ public class CacheService{
                 hash.getId(),
                 hash.getUsername(),
                 hash.getEmail(),
-                null,
+                hash.getPassword(),
                 Role.valueOf(hash.getRole()),
                 hash.isEnabled(),
                 hash.getCreatedAt()
@@ -39,7 +39,7 @@ public class CacheService{
         UsersHash usersHash = usersHashRepository.save(new UsersHash(
                 user.getId(),
                 user.getUsername(),
-                null,
+                user.getPassword(),
                 user.getEmail(),
                 user.getRole().toString(),
                 user.isEnabled(),
