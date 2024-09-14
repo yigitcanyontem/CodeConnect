@@ -5,7 +5,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication(
         scanBasePackages = {
-                "org.yigitcanyontem.notification"
+                "org.yigitcanyontem.notification",
+                "org.yigitcanyontem.amqp"
         }
 )
 public class NotificationApplication {

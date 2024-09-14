@@ -13,7 +13,12 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
                 org.yigitcanyontem.clients.cache.CacheClient.class
         }
 )
-@SpringBootApplication
+@SpringBootApplication(
+        scanBasePackages = {
+                "org.yigitcanyontem.cache",
+                "org.yigitcanyontem.amqp"
+        }
+)
 @EnableCaching
 public class CacheApplication {
 

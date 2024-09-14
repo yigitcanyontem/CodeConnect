@@ -19,6 +19,7 @@
         <module>apigw</module>
         <module>auth</module>
         <module>clients</module>
+        <module>amqp</module>
     </modules>
 
     <licenses>
