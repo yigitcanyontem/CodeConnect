@@ -1,5 +1,9 @@
 package org.yigitcanyontem.user.domain;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import jakarta.persistence.*;
 import lombok.*;
 import org.yigitcanyontem.clients.users.dto.UserRegisterDTO;
@@ -31,6 +35,9 @@ public class Users {
     @Enumerated(EnumType.STRING)
     private Role role;
     private boolean enabled;
+
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime createdAt;
 
     public Users(UserRegisterDTO userRegisterDTO) {

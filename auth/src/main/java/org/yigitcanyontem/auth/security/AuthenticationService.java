@@ -1,19 +1,13 @@
 package org.yigitcanyontem.auth.security;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.yigitcanyontem.auth.domain.Token;
 import org.yigitcanyontem.auth.repository.TokenRepository;
+import org.yigitcanyontem.clients.cache.CacheClient;
 import org.yigitcanyontem.clients.users.UsersClient;
 import org.yigitcanyontem.clients.users.dto.AuthenticationRequest;
 import org.yigitcanyontem.clients.users.dto.AuthenticationResponse;
@@ -21,7 +15,6 @@ import org.yigitcanyontem.clients.users.dto.UserRegisterDTO;
 import org.yigitcanyontem.clients.users.dto.UsersDto;
 import org.yigitcanyontem.clients.users.enums.Role;
 import org.yigitcanyontem.clients.users.enums.TokenType;
-
 import javax.security.auth.login.LoginException;
 import java.time.LocalDateTime;
 
@@ -34,6 +27,7 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final TokenRepository tokenRepository;
     private final UsersDetailsService userDetailsService;
+    private final CacheClient cacheClient;
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) throws LoginException {
         authenticationManager.authenticate(
@@ -52,6 +46,7 @@ public class AuthenticationService {
         String refreshToken = jwtService.generateRefreshToken(user);
         revokeAllUserTokens(user);
         saveUserToken(user, jwtToken);
+        cacheClient.putValueInCache("users-" + user.getEmail(), user);
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
@@ -82,7 +77,7 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse register(UserRegisterDTO request) {
-        var user = UsersDto.builder()
+        UsersDto user = UsersDto.builder()
                 .email(request.getEmail())
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
@@ -90,23 +85,16 @@ public class AuthenticationService {
                 .enabled(true)
                 .createdAt(LocalDateTime.now())
                 .build();
-        var savedUser = usersClient.save(user);
+        UsersDto savedUser = usersClient.save(user);
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
         saveUserToken(savedUser, jwtToken);
+        cacheClient.putValueInCache("users-" + user.getEmail(), user);
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
                 .id(usersClient.getUsersByUsername(request.getUsername()).getId())
                 .build();
-    }
-
-    private UsersPrincipal getLoggedInUser(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(authentication != null){
-            return (UsersPrincipal) authentication.getPrincipal();
-        }
-        throw new UsernameNotFoundException("User not found..!!");
     }
 
     public UsersDto validateToken(String token) {
