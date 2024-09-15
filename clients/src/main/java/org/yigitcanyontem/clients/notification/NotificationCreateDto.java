@@ -1,7 +1,7 @@
 package org.yigitcanyontem.clients.notification;
 
 public record NotificationCreateDto(
-        Integer customerId,
+        Integer userId,
         String message
 ) {
 }

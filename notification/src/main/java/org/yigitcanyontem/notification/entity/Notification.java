@@ -29,9 +29,9 @@ public class Notification {
             generator = "notification_id_sequence"
     )
     private Integer id;
-    private Integer customerId;
+    private Integer userId;
     private String message;
     private boolean isRead;
     private Date createdAt;
-
+    private Date readAt;
 }

@@ -20,21 +20,25 @@ public class NotificationService {
 
     public NotificationDto getNotification(Integer notificationId) {
         log.info("retrieving notification for id {}", notificationId);
-        Notification notification = notificationRepository.getById(notificationId);
+        Notification notification = notificationRepository.findById(notificationId).orElseThrow(
+                () -> new IllegalStateException("Notification with id " + notificationId + " not found")
+        );
+        notification.setRead(true);
+        notification.setReadAt(new Date());
         return new NotificationDto(notification.getMessage(), notification.isRead(), notification.getCreatedAt());
     }
 
     public NotificationDto sendNotification(NotificationCreateDto notificationCreateDto) {
-        log.info("sending notification to customer {}", notificationCreateDto.customerId());
+        log.info("sending notification to user {}", notificationCreateDto.userId());
         Notification notification = Notification.builder()
-                .customerId(notificationCreateDto.customerId())
+                .userId(notificationCreateDto.userId())
                 .message(notificationCreateDto.message())
                 .createdAt(Date.from(LocalDateTime.now().toInstant(java.time.ZoneOffset.UTC)))
                 .isRead(false)
                 .build();
 
         notificationRepository.saveAndFlush(notification);
-        log.info("notification sent: {}", notificationCreateDto.customerId());
+        log.info("notification sent: {}", notificationCreateDto.userId());
         return new NotificationDto(notification.getMessage(), notification.isRead(), notification.getCreatedAt());
     }
 
