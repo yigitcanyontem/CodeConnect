@@ -108,7 +108,7 @@ public class ContentController {
 
     @GetMapping("/replies/topic/{topicId}")
     public ResponseEntity<PaginatedResponse> getRepliesByTopicId(@PathVariable("topicId") Long topicId,
-                                                                 @RequestParam(defaultValue = "0", name = "page")  int page,
+                                                                 @RequestParam(defaultValue = "0", name = "page") int page,
                                                                  @RequestParam(defaultValue = "10", name = "size") int size) {
         try {
             return ResponseEntity.ok(replyService.getRepliesByTopicId(topicId, page, size));
@@ -132,8 +132,8 @@ public class ContentController {
 
     @GetMapping("/replies/reply/{replyId}")
     public ResponseEntity<PaginatedResponse> getChildRepliesByReplyId(@PathVariable("replyId") Long replyId,
-                                                                 @RequestParam(defaultValue = "0", name = "page") int page,
-                                                                 @RequestParam(defaultValue = "10", name = "size") int size) {
+                                                                      @RequestParam(defaultValue = "0", name = "page") int page,
+                                                                      @RequestParam(defaultValue = "10", name = "size") int size) {
         try {
             return ResponseEntity.ok(replyService.getChildRepliesByReplyId(replyId, page, size));
         } catch (Exception e) {
@@ -144,8 +144,8 @@ public class ContentController {
 
     @GetMapping("/current-user-replies")
     public ResponseEntity<PaginatedResponse> getCurrentUserReplies(@RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken,
-                                                                @RequestParam(defaultValue = "0", name = "page") int page,
-                                                                @RequestParam(defaultValue = "10", name = "size") int size) {
+                                                                   @RequestParam(defaultValue = "0", name = "page") int page,
+                                                                   @RequestParam(defaultValue = "10", name = "size") int size) {
         try {
             UsersDto user = throwIfJwtTokenIsInvalidElseReturnUser(jwtToken);
             return ResponseEntity.ok(replyService.getCurrentUserReplies(user, page, size));
@@ -194,74 +194,71 @@ public class ContentController {
         try {
             UsersDto user = throwIfJwtTokenIsInvalidElseReturnUser(jwtToken);
             return ResponseEntity.ok(replyVoteService.save(createDto, user));
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.error("Error while creating reply vote", e);
             return new ResponseEntity<>(new GenericResponse("Error while creating reply vote", null, false), HttpStatus.NOT_FOUND);
         }
     }
 
-    //
-//    @GetMapping("/tags")
-//    public ResponseEntity<PaginatedResponse> getTags(@RequestParam(defaultValue = "0") int page,
-//                                                     @RequestParam(defaultValue = "10") int size) {
-//        try {
-//            return ResponseEntity.ok(tagService.getPaginatedTags(page, size));
-//        }catch (Exception e) {
-//            log.error("Error while getting tags", e);
-//            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-//        }
-//    }
-//
-//    @GetMapping("/tags/search/{name}")
-//    public ResponseEntity<PaginatedResponse> searchTagByName(@PathVariable("name") String name,
-//                                                  @RequestParam(defaultValue = "0") int page,
-//                                                  @RequestParam(defaultValue = "10") int size) {
-//        try {
-//            return ResponseEntity.ok(tagService.searchTagByName(name, page, size));
-//        }catch (Exception e) {
-//            log.error("Error while getting tag", e);
-//            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-//        }
-//    }
-//
-//
 
-//    @PutMapping("/tag")
-//    public ResponseEntity<TagDto> updateTag(@RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken, @RequestBody TagCreateDto tagDto) {
-//        try {
-//            UsersDto user = throwIfJwtTokenIsInvalidElseReturnUser(jwtToken);
-//            return ResponseEntity.ok(tagService.update(tagDto, user));
-//        }catch (Exception e) {
-//            log.error("Error while updating tag", e);
-//            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-//        }
-//    }
-//
-//
-//    @PostMapping("/tag")
-//    public ResponseEntity<TagDto> createTag(@RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken, @RequestBody String tag) {
-//        try {
-//            UsersDto user = throwIfJwtTokenIsInvalidElseReturnUser(jwtToken);
-//            return ResponseEntity.ok(tagService.save(tag, user));
-//        }catch (Exception e) {
-//            log.error("Error while creating tag", e);
-//            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-//        }
-//    }
+    @GetMapping("/tags")
+    public ResponseEntity<PaginatedResponse> getPaginatedTags(@RequestParam(defaultValue = "0", name = "page") int page,
+                                                              @RequestParam(defaultValue = "10", name = "size") int size) {
+        try {
+            return ResponseEntity.ok(tagService.getPaginatedTags(page, size));
+        } catch (Exception e) {
+            log.error("Error while getting tags", e);
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+    }
 
-    //    @DeleteMapping("/tag/{id}")
-//    public ResponseEntity<Void> deleteTag(@RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken, @PathVariable Long id) {
-//        try {
-//            UsersDto user = throwIfJwtTokenIsInvalidElseReturnUser(jwtToken);
-//            tagService.delete(id, user);
-//            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//        } catch (Exception e) {
-//            log.error("Error while deleting tag", e);
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//    }
-//
-//
+    @GetMapping("/tags/search/{name}")
+    public ResponseEntity<PaginatedResponse> searchTagByName(@PathVariable("name") String name,
+                                                             @RequestParam(defaultValue = "0", name = "page") int page,
+                                                             @RequestParam(defaultValue = "10", name = "size") int size) {
+        try {
+            return ResponseEntity.ok(tagService.searchTagByName(name, page, size));
+        } catch (Exception e) {
+            log.error("Error while getting tag", e);
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+    }
+
+
+    @PutMapping("/tag")
+    public ResponseEntity<TagDto> updateTag(@RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken, @RequestBody TagDto tagDto) {
+        try {
+            UsersDto user = throwIfJwtTokenIsInvalidElseReturnUser(jwtToken);
+            return ResponseEntity.ok(tagService.update(tagDto, user));
+        } catch (Exception e) {
+            log.error("Error while updating tag", e);
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+    }
+
+
+    @PostMapping("/tag")
+    public ResponseEntity<TagDto> createTag(@RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken, @RequestBody TagCreateDto tag) {
+        try {
+            UsersDto user = throwIfJwtTokenIsInvalidElseReturnUser(jwtToken);
+            return ResponseEntity.ok(tagService.save(tag, user));
+        } catch (Exception e) {
+            log.error("Error while creating tag", e);
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @DeleteMapping("/tag/{id}")
+    public ResponseEntity<Void> deleteTag(@RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken, @PathVariable("id") Long id) {
+        try {
+            UsersDto user = throwIfJwtTokenIsInvalidElseReturnUser(jwtToken);
+            tagService.delete(id, user);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            log.error("Error while deleting tag", e);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 
     public UsersDto throwIfJwtTokenIsInvalidElseReturnUser(String jwtToken) {
         UsersDto user = authClient.validateToken(jwtToken).getBody();
