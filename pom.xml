@@ -20,6 +20,7 @@
         <module>auth</module>
         <module>clients</module>
         <module>amqp</module>
+        <module>validator</module>
     </modules>
 
     <licenses>

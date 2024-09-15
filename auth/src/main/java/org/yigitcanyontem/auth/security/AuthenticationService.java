@@ -1,5 +1,6 @@
 package org.yigitcanyontem.auth.security;
 
+import com.yigitcanyontem.validator.validators.user.UserValidator;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.yigitcanyontem.amqp.RabbitMQMessageProducer;
 import org.yigitcanyontem.auth.domain.Token;
 import org.yigitcanyontem.auth.repository.TokenRepository;
-import org.yigitcanyontem.clients.cache.CacheClient;
 import org.yigitcanyontem.clients.users.UsersClient;
 import org.yigitcanyontem.clients.users.dto.AuthenticationRequest;
 import org.yigitcanyontem.clients.users.dto.AuthenticationResponse;
@@ -33,7 +33,6 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final TokenRepository tokenRepository;
     private final UsersDetailsService userDetailsService;
-    private final CacheClient cacheClient;
     private final RabbitMQMessageProducer rabbitMQMessageProducer;
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) throws LoginException {
@@ -90,6 +89,8 @@ public class AuthenticationService {
             throw new IllegalArgumentException("User already exists");
         }
 
+        UserValidator.throwIfRegisterPayloadInvalid(request);
+
         UsersDto user = UsersDto.builder()
                 .email(request.getEmail())
                 .username(request.getUsername())
@@ -102,7 +103,7 @@ public class AuthenticationService {
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
         saveUserToken(savedUser, jwtToken);
-        saveUserToCache(user);
+        saveUserToCache(savedUser);
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
