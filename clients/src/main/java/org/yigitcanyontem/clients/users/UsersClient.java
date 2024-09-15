@@ -19,6 +19,9 @@ public interface UsersClient {
     @GetMapping(path = "api/v1/user/email/{email}")
     ResponseEntity<UsersDto> getUserByEmail(@PathVariable("email") String email);
 
+    @GetMapping(path = "api/v1/user/id/{id}")
+    ResponseEntity<UsersDto> getUserById(@PathVariable("id") Integer id);
+
     @PostMapping(path = "api/v1/user")
     ResponseEntity<UsersDto> save(@RequestBody UsersDto user);
 

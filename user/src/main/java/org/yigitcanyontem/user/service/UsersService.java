@@ -43,6 +43,21 @@ public class UsersService {
                 .build();
     }
 
+    public UsersDto getUserById(Integer id) {
+        Users user = usersRepository.findById(id).orElseThrow(
+                () -> new RuntimeException("User not found")
+        );
+        return new UsersDto().builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .password(user.getPassword())
+                .enabled(user.isEnabled())
+                .createdAt(user.getCreatedAt())
+                .build();
+    }
+
     public UsersDto save(UsersDto user) {
         Users newUser = Users.builder()
                 .username(user.getUsername())

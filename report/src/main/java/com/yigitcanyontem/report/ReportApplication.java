@@ -1,4 +1,4 @@
-package org.yigitcanyontem.auth;
+package com.yigitcanyontem.report;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,16 +14,11 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
                 org.yigitcanyontem.clients.report.ReportClient.class
         }
 )
-@SpringBootApplication(
-        scanBasePackages = {
-                "org.yigitcanyontem.auth",
-                "org.yigitcanyontem.amqp"
-        }
-)
-public class AuthApplication {
+@SpringBootApplication
+public class ReportApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(AuthApplication.class, args);
+        SpringApplication.run(ReportApplication.class, args);
     }
 
 }

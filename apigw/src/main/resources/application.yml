@@ -35,6 +35,10 @@ spring:
           uri: lb://CONTENT
           predicates:
             - Path=/api/v1/content/**
+        - id: report
+          uri: lb://REPORT
+          predicates:
+            - Path=/api/v1/report/**
 management:
   tracing:
     enabled: true

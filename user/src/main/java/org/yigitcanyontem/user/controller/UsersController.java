@@ -22,6 +22,16 @@ public class UsersController {
         try {
             return new ResponseEntity<>(usersService.getUsersByUsername(username), HttpStatus.OK);
         } catch (Exception e) {
+            log.error("Error while fetching user profile by username: {}", e.getMessage());
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("id/{id}")
+    public ResponseEntity<UsersDto> getUserById(@PathVariable("id") Integer id) {
+        try {
+            return new ResponseEntity<>(usersService.getUserById(id), HttpStatus.OK);
+        } catch (Exception e) {
             log.error("Error while fetching user profile by user id: {}", e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
@@ -32,7 +42,7 @@ public class UsersController {
         try {
             return new ResponseEntity<>(usersService.getUserByEmail(email), HttpStatus.OK);
         } catch (Exception e) {
-            log.error("Error while fetching user profile by user id: {}", e.getMessage());
+            log.error("Error while fetching user profile by email: {}", e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }

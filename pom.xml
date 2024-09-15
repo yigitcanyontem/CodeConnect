@@ -21,6 +21,8 @@
         <module>clients</module>
         <module>amqp</module>
         <module>validator</module>
+        <module>report</module>
+        <module>content</module>
     </modules>
 
     <licenses>
