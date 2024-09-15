@@ -2,6 +2,8 @@ package org.yigitcanyontem.user.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.yigitcanyontem.clients.auth.AuthClient;
 import org.yigitcanyontem.clients.users.dto.UserRegisterDTO;
@@ -16,18 +18,33 @@ public class UsersController {
     private final UsersService usersService;
 
     @GetMapping("username/{username}")
-    public UsersDto getUsersByUsername(@PathVariable("username") String username) {
-        return usersService.getUsersByUsername(username);
+    public ResponseEntity<UsersDto> getUsersByUsername(@PathVariable("username") String username) {
+        try {
+            return new ResponseEntity<>(usersService.getUsersByUsername(username), HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error while fetching user profile by user id: {}", e.getMessage());
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping("email/{email}")
-    public UsersDto getUserByEmail(@PathVariable("email") String email) {
-        return usersService.getUserByEmail(email);
+    public ResponseEntity<UsersDto> getUserByEmail(@PathVariable("email") String email) {
+        try {
+            return new ResponseEntity<>(usersService.getUserByEmail(email), HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error while fetching user profile by user id: {}", e.getMessage());
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping()
-    public UsersDto save(@RequestBody UsersDto user) {
-         return usersService.save(user);
+    public ResponseEntity<UsersDto> save(@RequestBody UsersDto user) {
+        try {
+            return new ResponseEntity<>(usersService.save(user), HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error while fetching user profile by user id: {}", e.getMessage());
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping("exists")

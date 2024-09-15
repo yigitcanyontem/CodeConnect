@@ -30,6 +30,8 @@ public class Reply {
 
     private Integer createdByUserId;
 
+    private String createdByUsername;
+
     private Date createdAt;
 
     private Date updatedAt;

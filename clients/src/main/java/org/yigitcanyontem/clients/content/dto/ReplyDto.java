@@ -17,7 +17,9 @@ public class ReplyDto {
 
     private TopicDto topic;
 
-    private UsersDto createdByUserId;
+    private Integer createdByUserId;
+
+    private String createdByUsername;
 
     private Date createdAt;
 

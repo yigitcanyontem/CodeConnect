@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.yigitcanyontem.amqp.RabbitMQMessageProducer;
 import org.yigitcanyontem.clients.content.dto.TagDto;
@@ -26,11 +27,11 @@ import java.util.stream.Collectors;
 public class TopicService {
     private final TopicRepository topicRepository;
     private final TagService tagService;
-    private final ReplyService replyService;
     private final RabbitMQMessageProducer rabbitMQMessageProducer;
 
-    public PaginatedResponse getTopics(int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page, size);
+    public PaginatedResponse getTrendingTopics(int page, int size) {
+        Sort sort = Sort.by(Sort.Order.desc("viewCountLastWeek"));
+        PageRequest pageRequest = PageRequest.of(page, size, sort);
         Page<Topic> topicPage = topicRepository.findAll(pageRequest);
 
         return returnPaginatedResponse(topicPage);
@@ -168,5 +169,16 @@ public class TopicService {
         topic.setViewCountLastWeek(topic.getViewCountLastWeek() + 1);
 
         topicRepository.saveAndFlush(topic);
+    }
+
+    public TopicDto getTopicById(Long topicId) {
+        Topic topic = topicRepository.findById(topicId)
+                .orElseThrow(() -> new RuntimeException("Topic not found"));
+
+        return convertToDto(topic);
+    }
+
+    public boolean isTopicExists(Long topicId) {
+        return topicRepository.existsById(topicId);
     }
 }

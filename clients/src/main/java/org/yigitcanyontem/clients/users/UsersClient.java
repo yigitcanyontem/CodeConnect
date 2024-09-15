@@ -14,13 +14,13 @@ import org.yigitcanyontem.clients.users.profile.UsersProfileUpdateDto;
 public interface UsersClient {
     //User
     @GetMapping(path = "api/v1/user/username/{username}")
-    UsersDto getUsersByUsername(@PathVariable("username") String username);
+    ResponseEntity<UsersDto> getUsersByUsername(@PathVariable("username") String username);
 
     @GetMapping(path = "api/v1/user/email/{email}")
-    UsersDto getUserByEmail(@PathVariable("email") String email);
+    ResponseEntity<UsersDto> getUserByEmail(@PathVariable("email") String email);
 
     @PostMapping(path = "api/v1/user")
-    UsersDto save(@RequestBody UsersDto user);
+    ResponseEntity<UsersDto> save(@RequestBody UsersDto user);
 
     @PostMapping(path = "api/v1/user/exists")
     boolean userExists(UserRegisterDTO request);

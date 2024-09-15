@@ -58,7 +58,7 @@ public class Topic {
 
     private String slug;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "topic_tag",
             joinColumns = @JoinColumn(name = "topic_id"),

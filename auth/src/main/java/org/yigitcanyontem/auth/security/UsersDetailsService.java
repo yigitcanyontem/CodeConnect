@@ -28,7 +28,7 @@ public class UsersDetailsService implements UserDetailsService {
             log.error("Error while fetching user from cache: {}", e.getMessage());
         }
         if (user == null) {
-            user = usersClient.getUserByEmail(email);
+            user = usersClient.getUserByEmail(email).getBody();
         }
 
         if (user == null) {

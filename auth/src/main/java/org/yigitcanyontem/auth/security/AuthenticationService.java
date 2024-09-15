@@ -43,7 +43,7 @@ public class AuthenticationService {
                 )
         );
 
-        UsersDto user = usersClient.getUserByEmail(request.getUsername());
+        UsersDto user = usersClient.getUserByEmail(request.getUsername()).getBody();
         if (!user.isEnabled()){
             throw new LoginException("Account doesn't exist");
         }
@@ -56,7 +56,7 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
-                .id(usersClient.getUserByEmail(request.getUsername()).getId())
+                .id(usersClient.getUserByEmail(request.getUsername()).getBody().getId())
                 .build();
     }
 
@@ -99,7 +99,7 @@ public class AuthenticationService {
                 .enabled(true)
                 .createdAt(Date.from(LocalDateTime.now().toInstant(java.time.ZoneOffset.UTC)))
                 .build();
-        UsersDto savedUser = usersClient.save(user);
+        UsersDto savedUser = usersClient.save(user).getBody();
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
         saveUserToken(savedUser, jwtToken);
@@ -107,7 +107,7 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
-                .id(usersClient.getUsersByUsername(request.getUsername()).getId())
+                .id(usersClient.getUsersByUsername(request.getUsername()).getBody().getId())
                 .build();
     }
 
@@ -116,6 +116,7 @@ public class AuthenticationService {
         String username = jwtService.extractUsername(token);
         UsersPrincipal userDetails = userDetailsService.loadUserByUsername(username);
         if (jwtService.validateToken(token, userDetails)) {
+            userDetails.user().setPassword(null);
             return userDetails.user();
         } else {
             return null;

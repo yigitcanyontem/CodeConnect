@@ -110,6 +110,7 @@ This section should list any major frameworks/libraries used to bootstrap your p
 ## TODO
 - [X] Implement RabbitMQ amqp service
 - [X] Implement redis cache service
+- [ ] Implement global exception handling for all services
 
 ## Contributing
 
