@@ -2,11 +2,8 @@ package org.yigitcanyontem.user.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 import org.yigitcanyontem.clients.auth.AuthClient;
-import org.yigitcanyontem.clients.notification.NotificationClient;
-import org.yigitcanyontem.clients.notification.NotificationCreateDto;
 import org.yigitcanyontem.clients.users.dto.UserRegisterDTO;
 import org.yigitcanyontem.clients.users.dto.UsersDto;
 import org.yigitcanyontem.user.service.UsersService;
@@ -17,8 +14,6 @@ import org.yigitcanyontem.user.service.UsersService;
 @RequiredArgsConstructor
 public class UsersController {
     private final UsersService usersService;
-    private final NotificationClient notificationClient;
-    private final AuthClient authClient;
 
     @GetMapping("username/{username}")
     public UsersDto getUsersByUsername(@PathVariable("username") String username) {

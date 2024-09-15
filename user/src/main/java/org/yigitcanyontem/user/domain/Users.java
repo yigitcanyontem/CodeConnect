@@ -12,7 +12,19 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "users")
+@Table(
+        name = "users",
+        uniqueConstraints = {
+        @UniqueConstraint(
+                name = "user_email_unique",
+                columnNames = "email"
+        ),
+        @UniqueConstraint(
+                name = "user_username_unique",
+                columnNames = "username"
+        )
+    }
+)
 @Builder
 public class Users {
     @Id

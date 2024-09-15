@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 import org.yigitcanyontem.user.domain.Users;
 
 @Repository
-public interface UsersRepository extends JpaRepository<Users, Long> {
+public interface UsersRepository extends JpaRepository<Users, Integer> {
     Users findByEmail(String email);
 
     Users findByUsername(String username);
