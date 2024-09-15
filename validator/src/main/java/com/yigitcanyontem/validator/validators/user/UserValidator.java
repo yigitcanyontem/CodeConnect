@@ -12,5 +12,9 @@ public class UserValidator {
         if (!PasswordValidator.isValidPassword(request.getPassword())) {
             throw new IllegalArgumentException("Invalid password");
         }
+
+        if (request.getUsername() == null || request.getUsername().length() < 3) {
+            throw new IllegalArgumentException("Invalid username");
+        }
     }
 }

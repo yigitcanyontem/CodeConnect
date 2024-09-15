@@ -1,4 +1,4 @@
-package com.yigitcanyontem.content.enums;
+package org.yigitcanyontem.clients.content.enums;
 
 public enum VoteType {
     UPVOTE,

@@ -40,6 +40,6 @@ public class Tag {
 
     private Integer createdByUserId;
 
-    @ManyToMany(mappedBy = "tags")
+    @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
     private Set<Topic> topics;
 }

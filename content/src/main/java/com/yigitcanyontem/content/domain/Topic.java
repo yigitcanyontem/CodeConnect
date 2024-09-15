@@ -42,9 +42,19 @@ public class Topic {
 
     private Integer createdByUserId;
 
+    private String createdByUsername;
+
+    private Integer updatedByUserId;
+
+    private String updatedByUsername;
+
     private Date createdAt;
 
-    private Long viewCount;
+    private Long viewCountTotal;
+
+    private Long viewCountLastWeek;
+
+    private String slug;
 
     @ManyToMany
     @JoinTable(

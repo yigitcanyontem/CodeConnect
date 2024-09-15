@@ -1,8 +1,8 @@
 package com.yigitcanyontem.content.domain;
 
-import com.yigitcanyontem.content.enums.VoteType;
 import jakarta.persistence.*;
 import lombok.*;
+import org.yigitcanyontem.clients.content.enums.VoteType;
 
 import java.util.Date;
 
