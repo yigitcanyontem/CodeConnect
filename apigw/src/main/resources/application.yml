@@ -31,7 +31,10 @@ spring:
           uri: lb://CACHE
           predicates:
             - Path=/api/v1/cache/**
-
+        - id: content
+          uri: lb://CONTENT
+          predicates:
+            - Path=/api/v1/content/**
 management:
   tracing:
     enabled: true

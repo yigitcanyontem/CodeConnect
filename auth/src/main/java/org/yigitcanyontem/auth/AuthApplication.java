@@ -10,6 +10,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
                 org.yigitcanyontem.clients.notification.NotificationClient.class,
                 org.yigitcanyontem.clients.auth.AuthClient.class,
                 org.yigitcanyontem.clients.cache.CacheClient.class,
+                org.yigitcanyontem.clients.content.ContentClient.class
         }
 )
 @SpringBootApplication(

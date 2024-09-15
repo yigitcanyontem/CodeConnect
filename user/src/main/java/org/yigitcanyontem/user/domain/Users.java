@@ -45,9 +45,4 @@ public class Users {
     private Role role;
     private boolean enabled;
     private Date createdAt;
-
-    public Users(UserRegisterDTO userRegisterDTO) {
-        this.username = userRegisterDTO.getUsername();
-        this.email = userRegisterDTO.getEmail();
-    }
 }

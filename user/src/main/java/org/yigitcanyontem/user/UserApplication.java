@@ -9,7 +9,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
                 org.yigitcanyontem.clients.users.UsersClient.class,
                 org.yigitcanyontem.clients.notification.NotificationClient.class,
                 org.yigitcanyontem.clients.auth.AuthClient.class,
-                org.yigitcanyontem.clients.cache.CacheClient.class
+                org.yigitcanyontem.clients.cache.CacheClient.class,
+                org.yigitcanyontem.clients.content.ContentClient.class
         }
 )
 @SpringBootApplication(
@@ -17,7 +18,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
                 "org.yigitcanyontem.user",
                 "org.yigitcanyontem.amqp"
         }
-)public class UserApplication {
+)
+public class UserApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(UserApplication.class, args);
