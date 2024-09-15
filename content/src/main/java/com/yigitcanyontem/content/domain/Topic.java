@@ -50,6 +50,8 @@ public class Topic {
 
     private Date createdAt;
 
+    private Date updatedAt;
+
     private Long viewCountTotal;
 
     private Long viewCountLastWeek;

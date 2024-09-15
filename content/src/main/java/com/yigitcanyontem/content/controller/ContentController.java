@@ -37,27 +37,27 @@ public class ContentController {
         }
     }
 
-//    @GetMapping("/topics/search")
-//    public ResponseEntity<PaginatedResponse> searchTopics(@RequestParam String query,
-//                                                          @RequestParam(defaultValue = "0") int page,
-//                                                          @RequestParam(defaultValue = "10") int size) {
-//        try {
-//            return ResponseEntity.ok(topicService.searchByName(query, page, size));
-//        } catch (Exception e) {
-//            log.error("Error while searching topics", e);
-//            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-//        }
-//    }
-//
-//    @GetMapping("/topic/{slug}")
-//    public ResponseEntity<TopicDto> getTopicBySlug(@PathVariable("slug") String slug) {
-//        try {
-//            return ResponseEntity.ok(topicService.getTopicBySlug(slug));
-//        }catch (Exception e) {
-//            log.error("Error while getting topic", e);
-//            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-//        }
-//    }
+    @GetMapping("/topics/search")
+    public ResponseEntity<PaginatedResponse> searchTopics(@RequestParam(name = "query") String query,
+                                                          @RequestParam(defaultValue = "0", name = "page") int page,
+                                                          @RequestParam(defaultValue = "10", name = "size") int size) {
+        try {
+            return ResponseEntity.ok(topicService.searchByName(query, page, size));
+        } catch (Exception e) {
+            log.error("Error while searching topics", e);
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/topic/{slug}")
+    public ResponseEntity<TopicDto> getTopicBySlug(@PathVariable("slug") String slug) {
+        try {
+            return ResponseEntity.ok(topicService.getTopicBySlug(slug));
+        }catch (Exception e) {
+            log.error("Error while getting topic", e);
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+    }
 //
 //    @GetMapping("/reply/{id}")
 //    public ResponseEntity<ReplyDto> getReplyById(@PathVariable("id") Long id) {
@@ -117,16 +117,16 @@ public class ContentController {
 //    }
 //
 //
-//    @PutMapping("/topic")
-//    public ResponseEntity<TopicDto> updateTopic(@RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken, @RequestBody TopicCreateDto topicUpdateDto) {
-//        try {
-//            UsersDto user = throwIfJwtTokenIsInvalidElseReturnUser(jwtToken);
-//            return ResponseEntity.ok(topicService.update(topicUpdateDto, user));
-//        }catch (Exception e) {
-//            log.error("Error while updating topic", e);
-//            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-//        }
-//    }
+    @PutMapping("/topic")
+    public ResponseEntity<TopicDto> updateTopic(@RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken, @RequestBody TopicCreateDto topicUpdateDto) {
+        try {
+            UsersDto user = throwIfJwtTokenIsInvalidElseReturnUser(jwtToken);
+            return ResponseEntity.ok(topicService.update(topicUpdateDto, user));
+        }catch (Exception e) {
+            log.error("Error while updating topic", e);
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+    }
 
 //    @PutMapping("/tag")
 //    public ResponseEntity<TagDto> updateTag(@RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken, @RequestBody TagCreateDto tagDto) {
@@ -231,17 +231,17 @@ public class ContentController {
 //        }
 //    }
 //
-//    @DeleteMapping("/topic/{id}")
-//    public ResponseEntity<Void> deleteTopic(@RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken, @PathVariable Long id) {
-//        try {
-//            UsersDto user = throwIfJwtTokenIsInvalidElseReturnUser(jwtToken);
-//            topicService.delete(id, user);
-//            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//        } catch (Exception e) {
-//            log.error("Error while deleting topic", e);
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//    }
+    @DeleteMapping("/topic/{id}")
+    public ResponseEntity<Void> deleteTopic(@RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken, @PathVariable("id") Long id) {
+        try {
+            UsersDto user = throwIfJwtTokenIsInvalidElseReturnUser(jwtToken);
+            topicService.delete(id, user);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            log.error("Error while deleting topic", e);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 //
 //    @DeleteMapping("/tag/{id}")
 //    public ResponseEntity<Void> deleteTag(@RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken, @PathVariable Long id) {

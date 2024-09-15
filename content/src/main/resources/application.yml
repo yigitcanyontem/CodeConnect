@@ -41,3 +41,11 @@ eureka:
       defaultZone: http://localhost:8761/eureka
     fetch-registry: true
     register-with-eureka: true
+
+rabbitmq:
+  exchanges:
+    internal: internal.exchange
+  queues:
+    content: content.queue
+  routing-keys:
+    internal-content: internal.content.routing-key

@@ -11,6 +11,8 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 public class TopicCreateDto {
+    private Long id;
+
     private Long parentTopicId;
 
     private String name;

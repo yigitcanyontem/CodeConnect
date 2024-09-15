@@ -3,6 +3,7 @@ package org.yigitcanyontem.clients.content.dto;
 import lombok.*;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -25,6 +26,8 @@ public class TopicDto {
 
     private Integer updatedByUserId;
 
+    private Date updatedAt;
+
     private String updatedByUsername;
 
     private Date createdAt;
@@ -38,6 +41,4 @@ public class TopicDto {
     private Set<TagDto> tags;
 
     private Long replyCount;
-
-    private Long childTopicCount;
 }

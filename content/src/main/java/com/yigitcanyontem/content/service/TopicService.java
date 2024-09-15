@@ -8,9 +8,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.yigitcanyontem.amqp.RabbitMQMessageProducer;
 import org.yigitcanyontem.clients.content.dto.TagDto;
 import org.yigitcanyontem.clients.content.dto.TopicCreateDto;
 import org.yigitcanyontem.clients.content.dto.TopicDto;
+import org.yigitcanyontem.clients.shared.dto.GenericRabbitMQMessage;
 import org.yigitcanyontem.clients.shared.dto.PaginatedResponse;
 import org.yigitcanyontem.clients.users.dto.UsersDto;
 
@@ -25,11 +27,23 @@ public class TopicService {
     private final TopicRepository topicRepository;
     private final TagService tagService;
     private final ReplyService replyService;
+    private final RabbitMQMessageProducer rabbitMQMessageProducer;
 
     public PaginatedResponse getTopics(int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<Topic> topicPage = topicRepository.findAll(pageRequest);
 
+        return returnPaginatedResponse(topicPage);
+    }
+
+    public PaginatedResponse searchByName(String query, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<Topic> topicPage = topicRepository.findAllByNameRegex(query,pageRequest);
+
+        return returnPaginatedResponse(topicPage);
+    }
+
+    private PaginatedResponse returnPaginatedResponse(Page<Topic> topicPage) {
         List<TopicDto> topicDtos = topicPage.getContent().stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
@@ -44,6 +58,9 @@ public class TopicService {
     }
 
     private TopicDto convertToDto(Topic topic) {
+        if (topic == null) {
+            return null;
+        }
         return TopicDto.builder()
                 .id(topic.getId())
                 .name(topic.getName())
@@ -52,6 +69,7 @@ public class TopicService {
                 .createdByUsername(topic.getCreatedByUsername())
                 .updatedByUserId(topic.getUpdatedByUserId())
                 .updatedByUsername(topic.getUpdatedByUsername())
+                .updatedAt(topic.getUpdatedAt())
                 .createdAt(topic.getCreatedAt())
                 .viewCountTotal(topic.getViewCountTotal())
                 .viewCountLastWeek(topic.getViewCountLastWeek())
@@ -85,6 +103,69 @@ public class TopicService {
         if (topicCreateDto.getTags() != null && !topicCreateDto.getTags().isEmpty()) {
             topic.setTags(tagService.getTags(topicCreateDto.getTags()));
         }
+
+        topicRepository.saveAndFlush(topic);
+    }
+
+    public TopicDto getTopicBySlug(String slug) {
+        Topic topic = topicRepository.findBySlug(slug)
+                .orElseThrow(() -> new RuntimeException("Topic not found"));
+
+        rabbitMQMessageProducer.publish(
+                new GenericRabbitMQMessage("api/v1/content/topic-increment-view", topic.getId().toString()),
+                "internal.exchange",
+                "internal.content.routing-key"
+        );
+        return convertToDto(topic);
+    }
+
+    public TopicDto update(TopicCreateDto topicUpdateDto, UsersDto user) {
+        Topic topic = throwIfNotAuthorizedOrReturnTopic(topicUpdateDto.getId(), user);
+
+        if (topicUpdateDto.getName() != null) {
+            topic.setName(topicUpdateDto.getName());
+            topic.setSlug(topicUpdateDto.getName().toLowerCase().replace(" ", "-"));
+        }
+
+        if (topicUpdateDto.getDescription() != null) {
+            topic.setDescription(topicUpdateDto.getDescription());
+        }
+
+        if (topicUpdateDto.getParentTopicId() != null) {
+            topic.setParentTopicId(topicUpdateDto.getParentTopicId());
+        }
+
+        if (topicUpdateDto.getTags() != null && !topicUpdateDto.getTags().isEmpty()) {
+            topic.setTags(tagService.getTags(topicUpdateDto.getTags()));
+        }
+
+        topicRepository.saveAndFlush(topic);
+
+        return convertToDto(topic);
+    }
+
+    public void delete(Long id, UsersDto user) {
+        throwIfNotAuthorizedOrReturnTopic(id, user);
+        topicRepository.deleteById(id);
+    }
+
+    private Topic throwIfNotAuthorizedOrReturnTopic(Long id, UsersDto user) {
+        Topic topic = topicRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Topic not found"));
+
+        if (!topic.getCreatedByUserId().equals(user.getId())) {
+            throw new RuntimeException("You are not allowed to delete this topic");
+        }
+
+        return topic;
+    }
+
+    public void incrementViewCount(Long id) {
+        Topic topic = topicRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Topic not found"));
+
+        topic.setViewCountTotal(topic.getViewCountTotal() + 1);
+        topic.setViewCountLastWeek(topic.getViewCountLastWeek() + 1);
 
         topicRepository.saveAndFlush(topic);
     }
