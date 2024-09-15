@@ -1,6 +1,8 @@
 package com.yigitcanyontem.content.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yigitcanyontem.content.domain.Reply;
+import com.yigitcanyontem.content.domain.ReplyVote;
 import com.yigitcanyontem.content.repository.ReplyRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +12,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.yigitcanyontem.clients.content.dto.ReplyCreateDto;
 import org.yigitcanyontem.clients.content.dto.ReplyDto;
+import org.yigitcanyontem.clients.content.enums.VoteType;
+import org.yigitcanyontem.clients.shared.dto.GenericResponse;
 import org.yigitcanyontem.clients.shared.dto.PaginatedResponse;
 import org.yigitcanyontem.clients.users.dto.UsersDto;
 
@@ -23,6 +27,7 @@ import java.util.stream.Collectors;
 public class ReplyService {
     private final ReplyRepository replyRepository;
     private final TopicService topicService;
+    private final ObjectMapper objectMapper;
 
     public PaginatedResponse getRepliesByTopicId(Long topicId, int page, int size) {
         Sort sort = Sort.by(Sort.Order.asc("createdAt"));
@@ -147,5 +152,28 @@ public class ReplyService {
     public ReplyDto getReplyById(Long id) {
         return convertToDto(replyRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Reply not found")));
+    }
+
+    public void updateVoteCount(GenericResponse response) {
+        ReplyVote replyVote =  objectMapper.convertValue(response.getData(), ReplyVote.class);
+
+        Reply reply = replyRepository.findById(replyVote.getReplyId())
+                .orElseThrow(() -> new RuntimeException("Reply not found"));
+
+        if (response.getMessage().equals("deleted")) {
+            if (replyVote.getVoteType() == VoteType.UPVOTE) {
+                reply.setUpvoteCount(reply.getUpvoteCount() - 1);
+            } else {
+                reply.setDownvoteCount(reply.getDownvoteCount() - 1);
+            }
+        } else {
+            if (response.getMessage().equals("upvoted")) {
+                reply.setUpvoteCount(reply.getUpvoteCount() + 1);
+            } else {
+                reply.setDownvoteCount(reply.getDownvoteCount() + 1);
+            }
+        }
+        replyRepository.saveAndFlush(reply);
+        log.info("Reply vote count updated: {}", reply);
     }
 }

@@ -13,7 +13,7 @@ import java.util.Date;
 public class ReplyVoteDto {
     private Long id;
 
-    private Long userId;
+    private Integer userId;
 
     private Long replyId;
 

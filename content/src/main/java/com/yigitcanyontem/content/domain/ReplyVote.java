@@ -35,7 +35,7 @@ public class ReplyVote {
     private Long id;
 
     @Column(name = "user_id", nullable = false)
-    private Long userId;
+    private Integer userId;
 
     @Column(name = "reply_id", nullable = false)
     private Long replyId;

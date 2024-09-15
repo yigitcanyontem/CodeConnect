@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.yigitcanyontem.clients.auth.AuthClient;
 import org.yigitcanyontem.clients.content.dto.*;
+import org.yigitcanyontem.clients.shared.dto.GenericResponse;
 import org.yigitcanyontem.clients.shared.dto.PaginatedResponse;
 import org.yigitcanyontem.clients.users.dto.UsersDto;
 
@@ -188,6 +189,16 @@ public class ContentController {
         }
     }
 
+    @PostMapping("/reply-vote")
+    public ResponseEntity<GenericResponse> createReplyVote(@RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken, @RequestBody ReplyVoteCreateDto createDto) {
+        try {
+            UsersDto user = throwIfJwtTokenIsInvalidElseReturnUser(jwtToken);
+            return ResponseEntity.ok(replyVoteService.save(createDto, user));
+        }catch (Exception e) {
+            log.error("Error while creating reply vote", e);
+            return new ResponseEntity<>(new GenericResponse("Error while creating reply vote", null, false), HttpStatus.NOT_FOUND);
+        }
+    }
 
     //
 //    @GetMapping("/tags")
@@ -251,47 +262,6 @@ public class ContentController {
 //    }
 //
 //
-//    @PutMapping("/reply-vote")
-//    public ResponseEntity<ReplyVoteDto> updateReplyVote(@RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken, @RequestBody ReplyVoteDto replyVoteDto) {
-//        try {
-//            UsersDto user = throwIfJwtTokenIsInvalidElseReturnUser(jwtToken);
-//            return ResponseEntity.ok(replyVoteService.update(replyVoteDto, user));
-//        } catch (Exception e) {
-//            log.error("Error while updating reply vote", e);
-//            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-//        }
-//    }
-
-
-
-
-//
-//    @PostMapping("/reply-vote")
-//    public ResponseEntity<ReplyVoteDto> createReplyVote(@RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken, @RequestBody String replyVote) {
-//        try {
-//            UsersDto user = throwIfJwtTokenIsInvalidElseReturnUser(jwtToken);
-//            return ResponseEntity.ok(replyVoteService.save(replyVote, user));
-//        }catch (Exception e) {
-//            log.error("Error while creating reply vote", e);
-//            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-//        }
-//    }
-//
-//    @DeleteMapping("/reply-vote/{id}")
-//    public ResponseEntity<Void> deleteReplyVote(@RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken, @PathVariable Long id) {
-//        try {
-//            UsersDto user = throwIfJwtTokenIsInvalidElseReturnUser(jwtToken);
-//            replyVoteService.delete(id, user);
-//            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//        } catch (Exception e) {
-//            log.error("Error while deleting reply vote", e);
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//    }
-//
-//
-
-
 
     public UsersDto throwIfJwtTokenIsInvalidElseReturnUser(String jwtToken) {
         UsersDto user = authClient.validateToken(jwtToken).getBody();
