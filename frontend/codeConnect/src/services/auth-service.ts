@@ -40,8 +40,10 @@ export class AuthService {
 
     static setSessionStorage(authenticationResponse: AuthenticationResponse) {
         sessionStorage.setItem('token', 'Basic ' + authenticationResponse.accessToken);
-        sessionStorage.setItem('refreshToken', authenticationResponse.refreshToken);
         sessionStorage.setItem('email', authenticationResponse.user.email);
         sessionStorage.setItem('username', authenticationResponse.user.username);
+
+        const refreshToken = authenticationResponse.refreshToken;
+        document.cookie = `refreshToken=${encodeURIComponent(refreshToken)}; path=/api/refresh-token; Secure; HttpOnly; SameSite=Lax`;
     }
 }

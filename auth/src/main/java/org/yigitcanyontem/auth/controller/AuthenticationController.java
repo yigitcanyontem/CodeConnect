@@ -1,5 +1,8 @@
 package org.yigitcanyontem.auth.controller;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +40,29 @@ public class AuthenticationController {
     }
 
     @PostMapping("/refresh-token")
-    public ResponseEntity<AuthenticationResponse> refreshAccessToken(@RequestParam("refreshToken") String refreshToken) {
-        return ResponseEntity.ok(authenticationService.refreshToken(refreshToken));
+    public ResponseEntity<AuthenticationResponse> refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
+        // Retrieve cookies from the request
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("refreshToken".equals(cookie.getName())) {
+                    String refreshToken = cookie.getValue();
+                    // Use the refresh token to get a new access token
+                    AuthenticationResponse authResponse = authenticationService.refreshToken(refreshToken);
+
+                    // Optionally, reset the cookie if needed
+                    Cookie newCookie = new Cookie("refreshToken", refreshToken);
+                    newCookie.setPath("/api/refresh-token");
+                    newCookie.setHttpOnly(true);
+                    newCookie.setSecure(true);  // Only send over HTTPS
+                    newCookie.setMaxAge(60 * 60 * 24 * 7); // Example: 1 week expiration
+                    response.addCookie(newCookie);
+
+                    return ResponseEntity.ok(authResponse);
+                }
+            }
+        }
+        // Handle the case where the cookie is not found
+        return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED).build();
     }
 }
