@@ -5,9 +5,12 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.yigitcanyontem.auth.domain.Token;
+import org.yigitcanyontem.auth.repository.TokenRepository;
 import org.yigitcanyontem.clients.users.dto.UsersDto;
 
 import java.security.Key;
@@ -17,14 +20,20 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
+@Slf4j
 public class JwtService {
 
+    private final TokenRepository tokenRepository;
     @Value("${spring.application.security.jwt.secret-key}")
     private String secretKey;
     @Value("${spring.application.security.jwt.expiration}")
     private long jwtExpiration;
     @Value("${spring.application.security.jwt.refresh-token.expiration}")
     private long refreshExpiration;
+
+    public JwtService(TokenRepository tokenRepository) {
+        this.tokenRepository = tokenRepository;
+    }
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -86,8 +95,27 @@ public class JwtService {
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {
+        Token tokenEntity = tokenRepository.findByToken(token).orElseThrow(
+                () -> new IllegalArgumentException("Token not found, token: " + token)
+        );
         final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+
+        if (!username.equals(userDetails.getUsername())) {
+            log.info("Username does not match, token: {}, userDetails: {}", username, userDetails.getUsername());
+            return false;
+        }
+
+        if (tokenEntity.isRevoked()) {
+            log.info("Token is revoked, token: {}", token);
+            return false;
+        }
+
+        if (isTokenExpired(token) || tokenEntity.isExpired()) {
+            log.info("Token is expired, token: {}", token);
+            return false;
+        }
+
+        return true;
     }
 
     public String GenerateToken(String username){

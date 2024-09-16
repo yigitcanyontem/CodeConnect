@@ -35,4 +35,9 @@ public class AuthenticationController {
     public ResponseEntity<UsersDto> validateToken(@RequestParam("token") String token) {
         return ResponseEntity.ok(authenticationService.validateToken(token));
     }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<AuthenticationResponse> refreshAccessToken(@RequestParam("refreshToken") String refreshToken) {
+        return ResponseEntity.ok(authenticationService.refreshToken(refreshToken));
+    }
 }

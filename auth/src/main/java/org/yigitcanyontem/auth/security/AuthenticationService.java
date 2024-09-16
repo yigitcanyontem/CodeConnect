@@ -52,11 +52,13 @@ public class AuthenticationService {
         String refreshToken = jwtService.generateRefreshToken(user);
         revokeAllUserTokens(user);
         saveUserToken(user, jwtToken);
+        saveUserToken(user, refreshToken);
         saveUserToCache(user);
+        user.setPassword(null);
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
-                .id(usersClient.getUserByEmail(request.getUsername().toLowerCase()).getBody().getId())
+                .user(user)
                 .build();
     }
 
@@ -103,11 +105,12 @@ public class AuthenticationService {
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
         saveUserToken(savedUser, jwtToken);
+        saveUserToken(savedUser, refreshToken);
         saveUserToCache(savedUser);
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
-                .id(usersClient.getUsersByUsername(request.getUsername()).getBody().getId())
+                .user(savedUser)
                 .build();
     }
 
@@ -134,4 +137,23 @@ public class AuthenticationService {
         }
     }
 
+    public AuthenticationResponse refreshToken(String refreshToken) {
+        refreshToken = refreshToken.replace("Bearer ", "");
+        String username = jwtService.extractUsername(refreshToken);
+        UsersPrincipal userDetails = userDetailsService.loadUserByUsername(username);
+        if (jwtService.validateToken(refreshToken, userDetails)) {
+            var jwtToken = jwtService.generateToken(userDetails.user());
+            var newRefreshToken = jwtService.generateRefreshToken(userDetails.user());
+            revokeAllUserTokens(userDetails.user());
+            saveUserToken(userDetails.user(), jwtToken);
+            saveUserToCache(userDetails.user());
+            return AuthenticationResponse.builder()
+                    .accessToken(jwtToken)
+                    .refreshToken(newRefreshToken)
+                    .user(userDetails.user())
+                    .build();
+        } else {
+            return null;
+        }
+    }
 }
