@@ -38,12 +38,12 @@ public class AuthenticationService {
     public AuthenticationResponse authenticate(AuthenticationRequest request) throws LoginException {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
+                        request.getUsername().toLowerCase(),
                         request.getPassword()
                 )
         );
 
-        UsersDto user = usersClient.getUserByEmail(request.getUsername()).getBody();
+        UsersDto user = usersClient.getUserByEmail(request.getUsername().toLowerCase()).getBody();
         if (!user.isEnabled()){
             throw new LoginException("Account doesn't exist");
         }
@@ -56,7 +56,7 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
-                .id(usersClient.getUserByEmail(request.getUsername()).getBody().getId())
+                .id(usersClient.getUserByEmail(request.getUsername().toLowerCase()).getBody().getId())
                 .build();
     }
 
@@ -92,8 +92,8 @@ public class AuthenticationService {
         UserValidator.throwIfRegisterPayloadInvalid(request);
 
         UsersDto user = UsersDto.builder()
-                .email(request.getEmail())
-                .username(request.getUsername())
+                .email(request.getEmail().toLowerCase())
+                .username(request.getUsername().toLowerCase())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
                 .enabled(true)

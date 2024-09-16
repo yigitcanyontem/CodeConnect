@@ -60,8 +60,8 @@ public class UsersService {
 
     public UsersDto save(UsersDto user) {
         Users newUser = Users.builder()
-                .username(user.getUsername())
-                .email(user.getEmail())
+                .username(user.getUsername().toLowerCase())
+                .email(user.getEmail().toLowerCase())
                 .role(user.getRole())
                 .password(user.getPassword())
                 .enabled(user.isEnabled())
@@ -79,6 +79,6 @@ public class UsersService {
     }
 
     public boolean userExists(UserRegisterDTO user) {
-        return usersRepository.existsByEmailOrUsername(user.getEmail(), user.getUsername());
+        return usersRepository.existsByEmailOrUsername(user.getEmail().toLowerCase(), user.getUsername().toLowerCase());
     }
 }
