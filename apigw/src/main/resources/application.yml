@@ -7,9 +7,21 @@ spring:
   zipkin:
     base-url: http://localhost:9411
   cloud:
-    compatibility-verifier:
-      enabled: false
     gateway:
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "http://localhost:5173"
+            allowedHeaders: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - DELETE
+              - PUT
+              - PATCH
+              - OPTIONS
       routes:
         - id: users
           uri: lb://USERS
