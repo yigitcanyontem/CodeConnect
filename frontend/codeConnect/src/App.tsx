@@ -4,6 +4,7 @@ import './App.css'
 import HomePage from "./pages/HomePage.tsx";
 import Login from "./pages/Login.tsx";
 import Register from "./pages/Register.tsx";
+import {CardWithForm} from "@/pages/CardWithForm.tsx";
 
 function App() {
 
@@ -11,6 +12,7 @@ function App() {
         <Router>
             <Routes>
                 <Route path="/" element={<HomePage />} />
+                <Route path="/a" element={<CardWithForm />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
             </Routes>
