@@ -2,12 +2,13 @@ import axios from 'axios';
 import {GlobalConstants} from "../utils/GlobalConstants.ts";
 import {UserRegisterDTO} from "../models/UserCreateDto.ts";
 import {AuthenticationResponse} from "../models/AuthenticationResponse.ts";
+import {AuthenticationRequest} from "@/models/AuthenticationRequest.ts";
 
 export class AuthService {
 
     static baseUrl: string = GlobalConstants.baseUrl + 'auth';
 
-    static authenticate(request: AuthenticationResponse): Promise<AuthenticationResponse>{
+    static authenticate(request: AuthenticationRequest): Promise<AuthenticationResponse>{
         return axios.post(`${this.baseUrl}/login`, request)
             .then(response => {
                 this.setSessionStorage(response.data);
@@ -33,7 +34,6 @@ export class AuthService {
 
     static logout() {
         sessionStorage.removeItem('token');
-        sessionStorage.removeItem('refreshToken');
         sessionStorage.removeItem('email');
         sessionStorage.removeItem('username');
     }
