@@ -1,0 +1,16 @@
+.main_container {
+    min-height: 100vh;
+}
+
+.login_main_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.header_container{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+}

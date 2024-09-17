@@ -5,18 +5,26 @@ import HomePage from "./pages/HomePage.tsx";
 import Login from "./pages/Login.tsx";
 import Register from "./pages/Register.tsx";
 import {CardWithForm} from "@/pages/CardWithForm.tsx";
+import {ThemeProvider} from "@/components/theme-provider.tsx";
+import {ModeToggle} from "@/shared/layout/ModeToggle.tsx";
+import {Toaster} from "@/components/ui/toaster.tsx";
+import Header from "@/shared/layout/Header.tsx";
 
 function App() {
 
     return (
-        <Router>
-            <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/a" element={<CardWithForm />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-            </Routes>
-        </Router>
+        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+            <Router>
+                <Header />
+                <Routes>
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/a" element={<CardWithForm />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                </Routes>
+            </Router>
+            <Toaster />
+        </ThemeProvider>
     );
 }
 
