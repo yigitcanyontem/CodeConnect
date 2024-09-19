@@ -29,7 +29,7 @@ public class UsersProfileController {
 
             return new ResponseEntity<>(usersProfileService.getUsersProfileByUsersId(user.getId()), HttpStatus.OK);
         }catch (Exception e) {
-            log.error("Error while fetching user profile by user id: {}", e.getMessage());
+            log.error("Error while fetching user from token: {}", e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }

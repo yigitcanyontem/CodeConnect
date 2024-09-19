@@ -1,12 +1,13 @@
 import {AuthService} from "../services/auth-service.ts";
-import {AuthenticationRequest} from "../models/AuthenticationRequest.ts";
+import {AuthenticationRequest} from "../models/auth/AuthenticationRequest.ts";
 import React, {useState} from "react";
-import {AuthenticationResponse} from "../models/AuthenticationResponse.ts";
+import {AuthenticationResponse} from "../models/auth/AuthenticationResponse.ts";
 import {Button} from "@/components/ui/button.tsx";
 import {Input} from "@/components/ui/input.tsx";
 import {Label} from "@/components/ui/label.tsx";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card.tsx";
 import {useToast} from "@/hooks/use-toast.ts";
+import {Link, useNavigate} from "react-router-dom";
 
 const Login = () => {
 
@@ -16,6 +17,7 @@ const Login = () => {
     const [error, setError] = useState<string | null>(null);
     const [response, setResponse] = useState<AuthenticationResponse | null>(null);
     const { toast } = useToast()
+    const navigate = useNavigate();
 
     // Handle form submission
     const handleLogin = async (e: React.FormEvent) => {
@@ -30,11 +32,11 @@ const Login = () => {
             })
             setResponse(result);
             setError(null);
+            navigate('/');
         } catch (err) {
             toast({
                 title: "Error while logging in",
             })
-            // Handle authentication error
             setError('Login failed. Please check your credentials.');
             setResponse(null);
         }
@@ -76,6 +78,16 @@ const Login = () => {
                         {error && <p className="text-red-500">{error}</p>}
                         <Button type="submit" className="w-full mt-4">Login</Button>
                     </form>
+                    <div className={'text-center mt-3'}>
+                        <Label>
+                            Don't have an account?
+                            <Link to={'/register'}>
+                                <Label className={'cursor-pointer text-blue-500'}>
+                                    &nbsp;&nbsp;Create account
+                                </Label>
+                            </Link>
+                        </Label>
+                    </div>
                 </CardContent>
             </Card>
         </div>

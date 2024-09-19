@@ -1,19 +1,60 @@
-import React, {useEffect, useState} from "react";
-import {ContentService} from "@/services/content-service.ts";
+import React, {useEffect, useState} from 'react';
 import {TopicDto} from "@/models/content/TopicDto.ts";
+import {ReplyDto} from "@/models/content/ReplyDto.ts";
+import {ContentService} from "@/services/content-service.ts";
+import {Link, useParams} from 'react-router-dom';
+import {Label} from "@/components/ui/label.tsx";
 import {ChatBubbleIcon} from "@radix-ui/react-icons";
 import {Bars3BottomRightIcon, EyeIcon, HandThumbDownIcon, HandThumbUpIcon} from "@heroicons/react/24/outline";
-import {Label} from "@/components/ui/label.tsx";
-import {Link} from "react-router-dom";
-import {ReplyDto} from "@/models/content/ReplyDto.ts";
 import {Share} from "lucide-react";
 import {Popover, PopoverContent, PopoverTrigger} from "@radix-ui/react-popover";
+import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar.tsx";
+import {Button} from "@/components/ui/button.tsx";
+import {Textarea} from "@/components/ui/textarea.tsx";
 import {Card, CardContent, CardHeader} from "@/components/ui/card.tsx";
-import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
+import {AuthenticationRequest} from "@/models/auth/AuthenticationRequest.ts";
+import {AuthService} from "@/services/auth-service.ts";
+import {ReplyCreateDto} from "@/models/content/ReplyCreateDto.ts";
+import {useToast} from "@/hooks/use-toast.ts";
+import {AuthenticationResponse} from "@/models/auth/AuthenticationResponse.ts";
+import {Input} from "@/components/ui/input.tsx";
 
-const HomePage = () => {
+const TopicPage = () => {
+    const [topic, setTopic] = useState<TopicDto>();
+    const [reply, setReply] = useState<string>();
+    const [replies, setReplies] = useState<ReplyDto[]>([]);
+    let {slug} = useParams();
     const [trendingTopics, setTrendingTopics] = useState<TopicDto[]>([]);
-    const [latestReplies, setLatestReplies] = useState<ReplyDto[]>([]);
+    const { toast } = useToast()
+    const [error, setError] = useState<string | null>(null);
+    const [response, setResponse] = useState<ReplyDto | null>(null);
+
+    const addReply = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        const request: ReplyCreateDto = {
+            content: reply!,
+            parentReplyId: null,
+            topicId: topic!.id
+        };
+
+        try {
+            const result = await ContentService.createReply(request);
+            toast({
+                title: "Reply added"
+            })
+            setResponse(result);
+            setReply('');
+            setReplies([...replies, result]);
+            setError(null);
+        } catch (err) {
+            toast({
+                title: "Error while adding reply",
+            })
+            setError("Reply failed. Please try again.");
+            setResponse(null);
+        }
+    };
 
     useEffect(() => {
         ContentService.getTrendingTopics(0, 20).then((response) => {
@@ -21,13 +62,21 @@ const HomePage = () => {
         }, (error) => {
             console.error(error);
         });
+    }, []);
 
-        ContentService.getLatestReplies(0, 10).then((response) => {
-            setLatestReplies(response.data);
+
+    useEffect(() => {
+        ContentService.getTopicBySlug(slug).then((response) => {
+            setTopic(response);
+            ContentService.getRepliesByTopicId(response.id).then((response) => {
+                setReplies(response.data);
+            }, (error) => {
+                console.error(error);
+            });
         }, (error) => {
             console.error(error);
         });
-    }, []);
+    }, [slug]);
 
     return (
         <div className={'common_container'}>
@@ -63,15 +112,10 @@ const HomePage = () => {
                 alignItems: 'start',
                 alignSelf: 'flex-start'
             }} className={'pl-6 mt-8'}>
-                {latestReplies.map((reply) => (
-                    <div className={'mb-8 flex flex-col flex-grow width-full shadow-md p-5 border rounded-xl'} key={reply.id}>
-
-                        <Label className="mb-5 cursor-pointer font-bold text-lg">
-                            <Link to={`/topic/${reply.topic.slug}`}>
-                                {reply.topic.name}
-                            </Link>
-                        </Label>
-
+                <Label className="text-2xl font-bold mb-5">{topic?.name}</Label>
+                {replies.map((reply) => (
+                    <div className={'mb-8 flex flex-col flex-grow width-full shadow-md p-5 border rounded-xl'}
+                         key={reply.id}>
 
                         <Label className={'mb-3'}>
                             {reply.content}
@@ -118,13 +162,13 @@ const HomePage = () => {
                                     <Label className={'text-xs'}>{reply.createdByUsername}</Label>
                                 </div>
                                 <div className={'flex items-center'}>
-                                        <Label className={'text-xs'}>{new Date(reply.createdAt).toLocaleString('tr-TR', {
-                                            day: '2-digit',
-                                            month: '2-digit',
-                                            year: 'numeric',
-                                            hour: '2-digit',
-                                            minute: '2-digit'
-                                        })}</Label>
+                                    <Label className={'text-xs'}>{new Date(reply.createdAt).toLocaleString('tr-TR', {
+                                        day: '2-digit',
+                                        month: '2-digit',
+                                        year: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                    })}</Label>
                                 </div>
                             </div>
 
@@ -138,9 +182,33 @@ const HomePage = () => {
 
                     </div>
                 ))}
+
+                <div className={'flex flex-col width-full mb-8'}>
+                    <Card>
+                        <CardHeader className={'pb-2'}>
+                            <Label className={'ms-2 text-lg font-bold'}>Reply</Label>
+                        </CardHeader>
+                        <CardContent className={'flex flex-col'}>
+                            <form onSubmit={addReply} className="space-y-4">
+                                <div>
+                                    <Textarea
+                                        id="reply"
+                                        value={reply}
+                                        onChange={(e) => setReply(e.target.value)}
+                                        required
+                                        placeholder={'Share your thought on the topic...'}
+                                              className={'border p-3 rounded-xl w-full h-40'}/>
+                                </div>
+                                {error && <p className="text-red-500">{error}</p>}
+                                <Button type="submit" className={'mt-5 w-fit'}>Add Reply</Button>
+                            </form>
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
         </div>
-    );
+    )
+        ;
 };
 
-export default HomePage;
+export default TopicPage;

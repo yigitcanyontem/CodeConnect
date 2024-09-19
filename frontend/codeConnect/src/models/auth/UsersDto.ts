@@ -1,4 +1,4 @@
-import { Role } from './Role';
+import { Role } from './Role.ts';
 
 export type UsersDto = {
     id: number;

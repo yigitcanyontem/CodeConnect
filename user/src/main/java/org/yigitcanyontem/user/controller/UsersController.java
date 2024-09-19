@@ -2,11 +2,13 @@ package org.yigitcanyontem.user.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.yigitcanyontem.clients.auth.AuthClient;
 import org.yigitcanyontem.clients.users.dto.UserRegisterDTO;
+import org.yigitcanyontem.clients.users.dto.UsersCompleteDto;
 import org.yigitcanyontem.clients.users.dto.UsersDto;
 import org.yigitcanyontem.user.service.UsersService;
 
@@ -16,6 +18,16 @@ import org.yigitcanyontem.user.service.UsersService;
 @RequiredArgsConstructor
 public class UsersController {
     private final UsersService usersService;
+
+    @GetMapping("me")
+    public ResponseEntity<UsersCompleteDto> getLoggedInUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken) {
+       try {
+            return new ResponseEntity<>(usersService.getLoggedInUser(jwtToken), HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error while fetching logged in user: {}", e.getMessage());
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+       }
+    }
 
     @GetMapping("username/{username}")
     public ResponseEntity<UsersDto> getUsersByUsername(@PathVariable("username") String username) {

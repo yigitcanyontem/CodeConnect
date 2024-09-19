@@ -116,6 +116,7 @@ public class AuthenticationService {
 
     public UsersDto validateToken(String token) {
         token = token.replace("Bearer ", "");
+        token = token.replace("Basic ", "");
         String username = jwtService.extractUsername(token);
         UsersPrincipal userDetails = userDetailsService.loadUserByUsername(username);
         if (jwtService.validateToken(token, userDetails)) {

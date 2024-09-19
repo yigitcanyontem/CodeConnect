@@ -2,6 +2,7 @@ package com.yigitcanyontem.content.service;
 
 import com.yigitcanyontem.content.domain.Tag;
 import com.yigitcanyontem.content.domain.Topic;
+import com.yigitcanyontem.content.repository.ReplyRepository;
 import com.yigitcanyontem.content.repository.TopicRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,7 @@ public class TopicService {
     private final TopicRepository topicRepository;
     private final TagService tagService;
     private final RabbitMQMessageProducer rabbitMQMessageProducer;
+    private final ReplyRepository replyRepository;
 
     public PaginatedResponse getTrendingTopics(int page, int size) {
         Sort sort = Sort.by(Sort.Order.desc("viewCountLastWeek"));
@@ -45,7 +47,7 @@ public class TopicService {
     }
 
     private PaginatedResponse returnPaginatedResponse(Page<Topic> topicPage) {
-        List<TopicDto> topicDtos = topicPage.getContent().stream()
+        List<TopicDto> topicDtos = topicPage.getContent().stream().parallel()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
 
@@ -75,6 +77,7 @@ public class TopicService {
                 .viewCountTotal(topic.getViewCountTotal())
                 .viewCountLastWeek(topic.getViewCountLastWeek())
                 .parentTopicId(topic.getParentTopicId())
+                .replyCount(getReplyCount(topic.getId()))
                 .slug(topic.getSlug())
                 .tags(topic.getTags().stream()
                         .map(tag -> TagDto.builder()
@@ -83,6 +86,10 @@ public class TopicService {
                                 .build())
                         .collect(Collectors.toSet()))
                 .build();
+    }
+
+    private Long getReplyCount(Long id) {
+        return replyRepository.countByTopicId(id);
     }
 
 

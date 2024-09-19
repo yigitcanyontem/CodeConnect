@@ -1,8 +1,8 @@
 import axios from 'axios';
 import {GlobalConstants} from "../utils/GlobalConstants.ts";
-import {UserRegisterDTO} from "../models/UserCreateDto.ts";
-import {AuthenticationResponse} from "../models/AuthenticationResponse.ts";
-import {AuthenticationRequest} from "@/models/AuthenticationRequest.ts";
+import {UserRegisterDTO} from "../models/auth/UserCreateDto.ts";
+import {AuthenticationResponse} from "../models/auth/AuthenticationResponse.ts";
+import {AuthenticationRequest} from "@/models/auth/AuthenticationRequest.ts";
 
 export class AuthService {
 
@@ -39,11 +39,15 @@ export class AuthService {
     }
 
     static setSessionStorage(authenticationResponse: AuthenticationResponse) {
-        sessionStorage.setItem('token', 'Basic ' + authenticationResponse.accessToken);
+        sessionStorage.setItem('token', authenticationResponse.accessToken);
         sessionStorage.setItem('email', authenticationResponse.user.email);
         sessionStorage.setItem('username', authenticationResponse.user.username);
 
         const refreshToken = authenticationResponse.refreshToken;
         document.cookie = `refreshToken=${encodeURIComponent(refreshToken)}; path=/api/refresh-token; Secure; HttpOnly; SameSite=Lax`;
+    }
+
+    static isAuthenticated(): boolean {
+        return sessionStorage.getItem('token') !== null;
     }
 }

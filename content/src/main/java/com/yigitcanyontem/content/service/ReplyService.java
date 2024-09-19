@@ -36,6 +36,13 @@ public class ReplyService {
         return convertToPaginatedResponse(replyPage);
     }
 
+    public PaginatedResponse getLatestReplies(int page, int size) {
+        Sort sort = Sort.by(Sort.Order.desc("createdAt"));
+        PageRequest pageRequest = PageRequest.of(page, size, sort);
+        Page<Reply> replyPage = replyRepository.findAll(pageRequest);
+        return convertToPaginatedResponse(replyPage);
+    }
+
     public PaginatedResponse getCurrentUserReplies(UsersDto user, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<Reply> replyPage = replyRepository.findAllByCreatedByUserId(user.getId(), pageRequest);
@@ -176,4 +183,5 @@ public class ReplyService {
         replyRepository.saveAndFlush(reply);
         log.info("Reply vote count updated: {}", reply);
     }
+
 }

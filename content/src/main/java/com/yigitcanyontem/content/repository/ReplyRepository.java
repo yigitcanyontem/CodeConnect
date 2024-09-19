@@ -18,4 +18,6 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
     Page<Reply> findAllByCreatedByUserId(Integer id, Pageable pageable);
 
     Page<Reply> findAllByParentReplyId(Long id, Pageable pageable);
+
+    Long countByTopicId(Long id);
 }

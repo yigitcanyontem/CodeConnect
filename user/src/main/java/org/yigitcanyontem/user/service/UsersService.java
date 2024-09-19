@@ -4,9 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.yigitcanyontem.amqp.RabbitMQMessageProducer;
+import org.yigitcanyontem.clients.auth.AuthClient;
 import org.yigitcanyontem.clients.notification.NotificationCreateDto;
 import org.yigitcanyontem.clients.users.dto.UserRegisterDTO;
+import org.yigitcanyontem.clients.users.dto.UsersCompleteDto;
 import org.yigitcanyontem.clients.users.dto.UsersDto;
+import org.yigitcanyontem.clients.users.profile.UsersProfileDto;
 import org.yigitcanyontem.user.domain.Users;
 import org.yigitcanyontem.user.repository.UsersRepository;
 
@@ -16,6 +19,8 @@ import org.yigitcanyontem.user.repository.UsersRepository;
 public class UsersService {
     private final UsersRepository usersRepository;
     private final RabbitMQMessageProducer rabbitMQMessageProducer;
+    private final AuthClient authClient;
+    private final UsersProfileService usersProfileService;
 
     public UsersDto getUsersByUsername(String username) {
         Users user = usersRepository.findByUsername(username);
@@ -80,5 +85,17 @@ public class UsersService {
 
     public boolean userExists(UserRegisterDTO user) {
         return usersRepository.existsByEmailOrUsername(user.getEmail().toLowerCase(), user.getUsername().toLowerCase());
+    }
+
+    public UsersCompleteDto getLoggedInUser(String jwtToken) {
+        UsersDto usersDto = authClient.validateToken(jwtToken).getBody();
+
+        if (usersDto == null) {
+            throw new RuntimeException("User not found");
+        }
+
+        UsersProfileDto usersProfileDto = usersProfileService.getUsersProfileByUsersId(usersDto.getId());
+        usersDto.setPassword(null);
+        return new UsersCompleteDto(usersDto, usersProfileDto);
     }
 }

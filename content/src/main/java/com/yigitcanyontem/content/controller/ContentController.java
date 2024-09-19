@@ -27,6 +27,17 @@ public class ContentController {
     private final ReplyVoteService replyVoteService;
     private final AuthClient authClient;
 
+    @GetMapping("/latest-replies")
+    public ResponseEntity<PaginatedResponse> getLatestReplies(@RequestParam(defaultValue = "0", name = "page") int page,
+                                                              @RequestParam(defaultValue = "10", name = "size") int size) {
+        try {
+            return ResponseEntity.ok(replyService.getLatestReplies(page, size));
+        } catch (Exception e) {
+            log.error("Error while getting replies", e);
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+    }
+
     @GetMapping("/topics-trending")
     public ResponseEntity<PaginatedResponse> getTrendingTopics(@RequestParam(defaultValue = "0", name = "page") int page,
                                                                @RequestParam(defaultValue = "10", name = "size") int size) {

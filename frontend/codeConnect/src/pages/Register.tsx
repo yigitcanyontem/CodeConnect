@@ -1,12 +1,13 @@
-import { AuthService } from "../services/auth-service.ts";
-import { UserRegisterDTO } from "../models/UserCreateDto.ts";
-import { useState } from "react";
-import { AuthenticationResponse } from "../models/AuthenticationResponse.ts";
-import { Button } from "@/components/ui/button.tsx";
-import { Input } from "@/components/ui/input.tsx";
-import { Label } from "@/components/ui/label.tsx";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card.tsx";
-import { useToast } from "@/hooks/use-toast.ts";
+import {AuthService} from "../services/auth-service.ts";
+import {UserRegisterDTO} from "../models/auth/UserCreateDto.ts";
+import React, {useState} from "react";
+import {AuthenticationResponse} from "../models/auth/AuthenticationResponse.ts";
+import {Button} from "@/components/ui/button.tsx";
+import {Input} from "@/components/ui/input.tsx";
+import {Label} from "@/components/ui/label.tsx";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card.tsx";
+import {useToast} from "@/hooks/use-toast.ts";
+import {Link} from "react-router-dom";
 
 const Register = () => {
     const [email, setEmail] = useState('');
@@ -14,11 +15,11 @@ const Register = () => {
     const [username, setUsername] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [response, setResponse] = useState<AuthenticationResponse | null>(null);
-    const { toast } = useToast();
+    const {toast} = useToast();
 
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
-        const request: UserRegisterDTO = { email, password, username };
+        const request: UserRegisterDTO = {email, password, username};
 
         try {
             const result = await AuthService.register(request);
@@ -84,6 +85,16 @@ const Register = () => {
                         {error && <p className="text-red-500">{error}</p>}
                         <Button type="submit" className="w-full mt-4">Register</Button>
                     </form>
+                    <div className={'text-center mt-3'}>
+                        <Label>
+                            Already have an account?
+                            <Link to={'/login'}>
+                                <Label className={'cursor-pointer text-blue-500'}>
+                                    &nbsp;&nbsp;Login here
+                                </Label>
+                            </Link>
+                        </Label>
+                    </div>
                 </CardContent>
             </Card>
         </div>
