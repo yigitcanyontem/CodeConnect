@@ -12,12 +12,10 @@ import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar.tsx";
 import {Button} from "@/components/ui/button.tsx";
 import {Textarea} from "@/components/ui/textarea.tsx";
 import {Card, CardContent, CardHeader} from "@/components/ui/card.tsx";
-import {AuthenticationRequest} from "@/models/auth/AuthenticationRequest.ts";
-import {AuthService} from "@/services/auth-service.ts";
 import {ReplyCreateDto} from "@/models/content/ReplyCreateDto.ts";
 import {useToast} from "@/hooks/use-toast.ts";
-import {AuthenticationResponse} from "@/models/auth/AuthenticationResponse.ts";
-import {Input} from "@/components/ui/input.tsx";
+import {ReplyVoteCreateDto} from "@/models/content/ReplyVoteCreateDto.ts";
+import {VoteType} from "@/models/content/VoteType.ts";
 
 const TopicPage = () => {
     const [topic, setTopic] = useState<TopicDto>();
@@ -28,6 +26,69 @@ const TopicPage = () => {
     const { toast } = useToast()
     const [error, setError] = useState<string | null>(null);
     const [response, setResponse] = useState<ReplyDto | null>(null);
+
+    const voteReply = (replyId: number, type: string) => async () => {
+        try {
+            const request: ReplyVoteCreateDto = {
+                replyId: replyId,
+                voteType: type === 'upvote' ? VoteType.UPVOTE : VoteType.DOWNVOTE
+            };
+
+            const result = await ContentService.createReplyVote(request).then((response) => {
+                //FIXME: This is not working properly
+                setReplies((prevReplies) =>
+                    prevReplies.map((reply) => {
+                        if (reply.id === replyId) {
+                            if (type === 'upvote') {
+                                return {
+                                    ...reply,
+                                    upvoteCount: reply.upvoteCount + 1,
+                                };
+                            } else {
+                                return {
+                                    ...reply,
+                                    downvoteCount: reply.downvoteCount + 1,
+                                };
+                            }
+                        }
+
+                        if (response.data == "deleted") {
+                            if (type === 'upvote') {
+                                return {
+                                    ...reply,
+                                    upvoteCount: reply.upvoteCount - 1,
+                                };
+                            }else {
+                                return {
+                                    ...reply,
+                                    downvoteCount: reply.downvoteCount - 1,
+                                };
+                            }
+                        }else if (response.data == "upvoted") {
+                            return {
+                                ...reply,
+                                upvoteCount: reply.upvoteCount + 1,
+                            }
+                        }else if (response.data == "downvoted") {
+                            return {
+                                ...reply,
+                                downvoteCount: reply.downvoteCount + 1,
+                            }
+                        }
+                        return reply;
+                    })
+                );
+            });
+            toast({
+                title: request.voteType === VoteType.UPVOTE ? "Upvoted" : "Downvoted"
+            })
+            setError(null);
+        } catch (err) {
+            setError("Upvote failed. Please try again.");
+            setResponse(null);
+        }
+    }
+
 
     const addReply = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -125,11 +186,11 @@ const TopicPage = () => {
                             <div className={'flex flex-col'}>
                                 <div className={'flex flex-row'}>
                                     <div className={'flex items-center mr-6'}>
-                                        <HandThumbUpIcon className="w-4 h-4 mr-1"/>
+                                        <HandThumbUpIcon onClick={voteReply(reply.id, 'upvote')} className="w-4 h-4 mr-1 cursor-pointer"/>
                                         <span>{reply.upvoteCount}</span>
                                     </div>
                                     <div className={'flex items-center'}>
-                                        <HandThumbDownIcon className="w-4 h-4 mr-1"/>
+                                        <HandThumbDownIcon onClick={voteReply(reply.id, 'downvote')} className="w-4 h-4 mr-1 cursor-pointer"/>
                                         <span>{reply.downvoteCount}</span>
                                     </div>
                                 </div>
