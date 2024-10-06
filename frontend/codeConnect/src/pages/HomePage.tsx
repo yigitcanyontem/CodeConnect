@@ -7,24 +7,36 @@ import {Label} from "@/components/ui/label.tsx";
 import {Link} from "react-router-dom";
 import {ReplyDto} from "@/models/content/ReplyDto.ts";
 import UserReplies from "@/shared/components/UserReplies.tsx";
+import Paginator from "@/shared/components/Paginator.tsx";
 
 const HomePage = () => {
     const [trendingTopics, setTrendingTopics] = useState<TopicDto[]>([]);
     const [latestReplies, setLatestReplies] = useState<ReplyDto[]>([]);
+    const [page, setPage] = useState<number>(0);
+    const [pageCount, setPageCount] = useState<number>(0);
 
     useEffect(() => {
-        ContentService.getTrendingTopics(0, 20).then((response) => {
+        ContentService.getTrendingTopics(0, 10).then((response) => {
             setTrendingTopics(response.data);
         }, (error) => {
             console.error(error);
         });
 
-        ContentService.getLatestReplies(0, 10).then((response) => {
+
+    }, []);
+
+    useEffect(() => {
+        getReplies();
+    }, [page]);
+
+    const getReplies = function (){
+        ContentService.getLatestReplies(page, 10).then((response) => {
             setLatestReplies(response.data);
+            setPageCount(response.totalPages);
         }, (error) => {
             console.error(error);
         });
-    }, []);
+    }
 
     return (
         <div className={'common_container'}>
@@ -32,7 +44,7 @@ const HomePage = () => {
                 <h1 className="text-2xl font-bold mb-2 mt-8">Trending</h1>
                 <div style={{overflowY: 'auto', height: '80vh'}} className={'custom_scrollbar pr-8'}>
                     {trendingTopics.map((topic) => (
-                        <div className="p-3 rounded-lg shadow-md border mb-3" key={topic.id}>
+                        <div className="p-3 rounded-lg pl-0 mb-3" key={topic.id}>
                             <Link to={`/topic/${topic.slug}`}>
                                 <Label className="cursor-pointer font-bold">{topic.name}</Label>
                             </Link>
@@ -59,8 +71,14 @@ const HomePage = () => {
                 flexDirection: 'column',
                 alignItems: 'start',
                 alignSelf: 'flex-start'
-            }} className={'pl-6 mt-8'}>
+            }} className={'pl-6 mt-8 pb-9'}>
                 <UserReplies replies={latestReplies}/>
+                <Paginator
+                    currentPage={page + 1}
+                    totalPages={pageCount}
+                    onPageChange={(pageNumber) => setPage(pageNumber - 1)}
+                    showPreviousNext={true}
+                />
             </div>
         </div>
     );
