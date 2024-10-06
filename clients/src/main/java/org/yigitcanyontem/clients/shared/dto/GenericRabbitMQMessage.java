@@ -7,6 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@ToString
 public class GenericRabbitMQMessage {
     private String endpoint;
     private Object message;

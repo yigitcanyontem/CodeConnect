@@ -11,6 +11,7 @@ import org.yigitcanyontem.clients.users.dto.UsersCompleteDto;
 import org.yigitcanyontem.clients.users.dto.UsersDto;
 import org.yigitcanyontem.clients.users.profile.UsersProfileDto;
 import org.yigitcanyontem.user.domain.Users;
+import org.yigitcanyontem.user.domain.UsersProfile;
 import org.yigitcanyontem.user.repository.UsersRepository;
 
 @Service
@@ -72,15 +73,17 @@ public class UsersService {
                 .enabled(user.isEnabled())
                 .createdAt(user.getCreatedAt())
                 .build();
-         newUser = usersRepository.saveAndFlush(newUser);
-         user.setId(newUser.getId());
+        newUser = usersRepository.saveAndFlush(newUser);
+        user.setId(newUser.getId());
+
+        usersProfileService.saveNewUsersProfile(newUser);
 
         rabbitMQMessageProducer.publish(
                 new NotificationCreateDto(user.getId(), "User created"),
                 "internal.exchange",
                 "internal.notifications.routing-key"
         );
-         return user;
+        return user;
     }
 
     public boolean userExists(UserRegisterDTO user) {

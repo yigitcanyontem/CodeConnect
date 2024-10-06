@@ -15,6 +15,7 @@ public class UsersProfileDto {
     private String firstName;
     private String lastName;
     private String profilePictureUrl;
+    private String bannerPictureUrl;
     private String bio;
     private String city;
     private String country;
@@ -25,4 +26,6 @@ public class UsersProfileDto {
     private String linkedinProfile;
     private String githubProfile;
     private String mediumProfile;
+    private long followingCount;
+    private long followersCount;
 }

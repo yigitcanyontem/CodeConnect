@@ -1,12 +1,16 @@
 package org.yigitcanyontem.user.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.yigitcanyontem.clients.shared.dto.GenericResponse;
+import org.yigitcanyontem.clients.users.dto.UserFollowDto;
 import org.yigitcanyontem.clients.users.dto.UsersDto;
 import org.yigitcanyontem.clients.users.profile.UsersProfileCreateDto;
 import org.yigitcanyontem.clients.users.profile.UsersProfileDto;
 import org.yigitcanyontem.clients.users.profile.UsersProfileUpdateDto;
+import org.yigitcanyontem.user.domain.Users;
 import org.yigitcanyontem.user.domain.UsersProfile;
 import org.yigitcanyontem.user.repository.UsersProfileRepository;
 import org.yigitcanyontem.user.repository.UsersRepository;
@@ -19,6 +23,7 @@ import java.util.Date;
 public class UsersProfileService {
     private final UsersProfileRepository usersProfileRepository;
     private final UsersRepository usersRepository;
+    private final ObjectMapper objectMapper;
 
     public UsersProfileDto getUsersProfileByEmail(String email) {
         return mapDomainToDto(usersProfileRepository.findUsersProfileByUsersIdEmail(email).orElse(null));
@@ -104,6 +109,7 @@ public class UsersProfileService {
                 .firstName(usersProfile.getFirstName())
                 .lastName(usersProfile.getLastName())
                 .profilePictureUrl(usersProfile.getProfilePictureUrl())
+                .bannerPictureUrl(usersProfile.getBannerPictureUrl())
                 .bio(usersProfile.getBio())
                 .city(usersProfile.getCity())
                 .country(usersProfile.getCountry())
@@ -113,10 +119,48 @@ public class UsersProfileService {
                 .linkedinProfile(usersProfile.getLinkedinProfile())
                 .githubProfile(usersProfile.getGithubProfile())
                 .mediumProfile(usersProfile.getMediumProfile())
+                .followersCount(usersProfile.getFollowersCount())
+                .followingCount(usersProfile.getFollowingCount())
                 .build();
     }
 
     public void delete(UsersDto usersProfile) {
         usersProfileRepository.deleteByUsersIdId(usersProfile.getId());
+    }
+
+    public void updateFollowCount(UserFollowDto followDto) {
+        UsersProfile usersProfile = getByUsersID(followDto.getUserId());
+        UsersProfile engagedUsersProfile = getByUsersID(followDto.getEngagedUserId());
+
+        if (followDto.isFollowed()) {
+            engagedUsersProfile.setFollowersCount(
+                    (engagedUsersProfile.getFollowersCount() != null ? engagedUsersProfile.getFollowersCount() : 0) + 1
+            );
+
+            usersProfile.setFollowingCount(
+                    (engagedUsersProfile.getFollowingCount() != null ? engagedUsersProfile.getFollowingCount() : 0) + 1
+            );
+        } else {
+            engagedUsersProfile.setFollowersCount(
+                    (engagedUsersProfile.getFollowersCount() != null ? engagedUsersProfile.getFollowersCount() : 0) - 1
+            );
+
+            usersProfile.setFollowingCount(
+                    (engagedUsersProfile.getFollowingCount() != null ? engagedUsersProfile.getFollowingCount() : 0) - 1
+            );
+        }
+    }
+
+    public void saveNewUsersProfile(Users user) {
+        usersProfileRepository.save(
+                UsersProfile.builder()
+                        .usersId(user)
+                        .followersCount(0)
+                        .followingCount(0)
+                        .createdAt(user.getCreatedAt())
+                        .bio("Hello, I am a new user")
+                        .build()
+        );
+
     }
 }

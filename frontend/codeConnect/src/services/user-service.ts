@@ -9,11 +9,11 @@ import {UsersProfileUpdateDto} from "@/models/user/UsersProfileUpdateDto.ts";
 export class UserService {
     static userBaseUrl: string = GlobalConstants.baseUrl + 'user';
     static userProfilesBaseUrl: string = GlobalConstants.baseUrl + 'user-profile';
-    static token: string | null = sessionStorage.getItem('token');
+    static userEngagementBaseUrl: string = GlobalConstants.baseUrl + 'user-engagement';
 
     static getLoggedInUser(): Promise<UsersCompleteDto> {
         return axios.get(`${this.userBaseUrl}/me`, {
-            headers: { 'Authorization': this.token }
+            headers: { 'Authorization': sessionStorage.getItem('token') }
         })
         .then(response => response.data)
         .catch(error => {
@@ -42,7 +42,7 @@ export class UserService {
 
     static saveUserProfile(createDto: UsersProfileCreateDto): Promise<UsersProfileDto> {
         return axios.post(this.userProfilesBaseUrl, createDto, {
-            headers: { 'Authorization': this.token }
+            headers: { 'Authorization': sessionStorage.getItem('token') }
         })
         .then(response => response.data)
         .catch(error => {
@@ -53,12 +53,34 @@ export class UserService {
 
     static updateUserProfile(updateDto: UsersProfileUpdateDto): Promise<UsersProfileDto> {
         return axios.put(this.userProfilesBaseUrl, updateDto, {
-            headers: { 'Authorization': this.token }
+            headers: { 'Authorization': sessionStorage.getItem('token') }
         })
         .then(response => response.data)
         .catch(error => {
             console.error('Error while updating user profile:', error);
             throw error;
         });
+    }
+
+    static followUser(engagedUserId: number): Promise<void> {
+        return axios.put(this.userEngagementBaseUrl + '/follow/' + engagedUserId, {}, {
+            headers: { 'Authorization': sessionStorage.getItem('token') }
+        })
+            .then(response => response.data)
+            .catch(error => {
+                console.error('Error while following user:', error);
+                throw error;
+            });
+    }
+
+    static unfollowUser(engagedUserId: number): Promise<void> {
+        return axios.put(this.userEngagementBaseUrl + '/unfollow/' + engagedUserId, {}, {
+            headers: { 'Authorization': sessionStorage.getItem('token') }
+        })
+            .then(response => response.data)
+            .catch(error => {
+                console.error('Error while unfollowing:', error);
+                throw error;
+            });
     }
 }

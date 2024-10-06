@@ -13,6 +13,7 @@ import org.yigitcanyontem.clients.users.profile.UsersProfileDto;
 import org.yigitcanyontem.clients.users.profile.UsersProfileUpdateDto;
 import org.yigitcanyontem.user.domain.UsersProfile;
 import org.yigitcanyontem.user.service.UsersProfileService;
+import org.yigitcanyontem.user.util.UsersUtil;
 
 @Slf4j
 @RestController
@@ -20,12 +21,12 @@ import org.yigitcanyontem.user.service.UsersProfileService;
 @RequiredArgsConstructor
 public class UsersProfileController {
     private final UsersProfileService usersProfileService;
-    private final AuthClient authClient;
+    private final UsersUtil usersUtil;
 
     @GetMapping("current")
     public ResponseEntity<UsersProfileDto> getLoggedInUserProfile(@RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken) {
         try {
-            UsersDto user = throwIfJwtTokenIsInvalidElseReturnUser(jwtToken);
+            UsersDto user = usersUtil.throwIfJwtTokenIsInvalidElseReturnUser(jwtToken);
 
             return new ResponseEntity<>(usersProfileService.getUsersProfileByUsersId(user.getId()), HttpStatus.OK);
         }catch (Exception e) {
@@ -57,7 +58,7 @@ public class UsersProfileController {
     @PostMapping()
     public ResponseEntity<UsersProfileDto> save(@RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken, @RequestBody UsersProfileCreateDto createDto) {
         try {
-            UsersDto user = throwIfJwtTokenIsInvalidElseReturnUser(jwtToken);
+            UsersDto user = usersUtil.throwIfJwtTokenIsInvalidElseReturnUser(jwtToken);
 
             return new ResponseEntity<>(usersProfileService.save(createDto, user), HttpStatus.OK);
         }catch (Exception e) {
@@ -69,7 +70,7 @@ public class UsersProfileController {
     @PutMapping()
     public ResponseEntity<UsersProfileDto> save(@RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken, @RequestBody UsersProfileUpdateDto updateDto) {
         try {
-            UsersDto user = throwIfJwtTokenIsInvalidElseReturnUser(jwtToken);
+            UsersDto user = usersUtil.throwIfJwtTokenIsInvalidElseReturnUser(jwtToken);
 
             return new ResponseEntity<>(usersProfileService.update(updateDto, user), HttpStatus.OK);
         }catch (Exception e) {
@@ -81,23 +82,13 @@ public class UsersProfileController {
     @DeleteMapping()
     public ResponseEntity<Void> delete(@RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken) {
         try {
-            UsersDto user = throwIfJwtTokenIsInvalidElseReturnUser(jwtToken);
+            UsersDto user = usersUtil.throwIfJwtTokenIsInvalidElseReturnUser(jwtToken);
             usersProfileService.delete(user);
             return ResponseEntity.ok().build();
         }catch (Exception e) {
             log.error("Error while deleting user profile: {}", e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
-    }
-
-    public UsersDto throwIfJwtTokenIsInvalidElseReturnUser(String jwtToken) {
-        UsersDto user = authClient.validateToken(jwtToken).getBody();
-
-        if (user == null) {
-            throw new IllegalArgumentException("Invalid JWT token");
-        }
-
-        return user;
     }
 
 }

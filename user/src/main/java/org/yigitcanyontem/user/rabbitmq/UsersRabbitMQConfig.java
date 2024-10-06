@@ -1,4 +1,4 @@
-package com.yigitcanyontem.content.rabbitmq;
+package org.yigitcanyontem.user.rabbitmq;
 
 import lombok.Getter;
 import org.springframework.amqp.core.Binding;
@@ -11,15 +11,15 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @Getter
-public class ContentRabbitMQConfig {
+public class UsersRabbitMQConfig {
     @Value("${rabbitmq.exchanges.internal}")
     private String internalExchange;
 
-    @Value("${rabbitmq.queues.content}")
-    private String contentQueue;
+    @Value("${rabbitmq.queues.user}")
+    private String userQueue;
 
-    @Value("${rabbitmq.routing-keys.internal-content}")
-    private String internalContentRoutingKeys;
+    @Value("${rabbitmq.routing-keys.internal-user}")
+    private String internalUserRoutingKeys;
 
     @Bean
     public TopicExchange internalExchange() {
@@ -27,16 +27,16 @@ public class ContentRabbitMQConfig {
     }
 
     @Bean
-    public Queue contentQueue() {
-        return new Queue(contentQueue);
+    public Queue userQueue() {
+        return new Queue(userQueue);
     }
 
     @Bean
-    public Binding contentBinder() {
+    public Binding userBinder() {
         return BindingBuilder
-                .bind(contentQueue())
+                .bind(userQueue())
                 .to(internalExchange())
-                .with(internalContentRoutingKeys);
+                .with(internalUserRoutingKeys);
     }
 
 }

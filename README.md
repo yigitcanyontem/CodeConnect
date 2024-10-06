@@ -111,7 +111,10 @@ This section should list any major frameworks/libraries used to bootstrap your p
 - [X] Implement RabbitMQ amqp service
 - [X] Implement redis cache service
 - [ ] Implement global exception handling for all services
-
+- [ ] Implement global logging for all services
+- [ ] add following user
+- [ ] add user blocking
+- [ ] add user deletion scenario
 ## Contributing
 
 ## License

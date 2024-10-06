@@ -4,6 +4,7 @@ export interface UsersProfileDto {
     firstName: string;
     lastName: string;
     profilePictureUrl: string;
+    bannerPictureUrl: string;
     bio: string;
     city: string;
     country: string;
@@ -14,4 +15,6 @@ export interface UsersProfileDto {
     linkedinProfile: string;
     githubProfile: string;
     mediumProfile: string;
+    followingCount: number;
+    followersCount: number;
 }
