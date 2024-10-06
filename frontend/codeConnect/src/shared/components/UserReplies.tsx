@@ -16,7 +16,7 @@ const UserReplies: React.FC<UserRepliesProps> = ({replies}) => {
     return (
         <div className={"width-full"}>
             {replies?.map((reply) => (
-                <div className={'mb-8 flex flex-col flex-grow width-full p-5'} key={reply.id}>
+                <div className={'mb-8 flex flex-col flex-grow width-full p-5 pl-0 pr-0'} key={reply.id}>
 
                     <Label className="mb-5 cursor-pointer font-bold text-lg">
                         <Link to={`/topic/${reply.topic.slug}`}>

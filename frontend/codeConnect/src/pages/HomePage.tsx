@@ -44,7 +44,7 @@ const HomePage = () => {
                 <h1 className="text-2xl font-bold mb-2 mt-8">Trending</h1>
                 <div style={{overflowY: 'auto', height: '80vh'}} className={'custom_scrollbar pr-8'}>
                     {trendingTopics.map((topic) => (
-                        <div className="p-3 rounded-lg pl-0 mb-3" key={topic.id}>
+                        <div className="p-3 rounded-lg pl-0 pr-0 mb-3" key={topic.id}>
                             <Link to={`/topic/${topic.slug}`}>
                                 <Label className="cursor-pointer font-bold">{topic.name}</Label>
                             </Link>
