@@ -2,6 +2,7 @@ export interface UsersProfileCreateDto {
     firstName: string;
     lastName: string;
     profilePictureUrl: string;
+    bannerPictureUrl: string;
     bio: string;
     city: string;
     country: string;

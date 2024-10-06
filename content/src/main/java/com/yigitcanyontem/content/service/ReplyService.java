@@ -44,7 +44,8 @@ public class ReplyService {
     }
 
     public PaginatedResponse getCurrentUserReplies(UsersDto user, int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page, size);
+        Sort sort = Sort.by(Sort.Order.desc("createdAt"));
+        PageRequest pageRequest = PageRequest.of(page, size, sort);
         Page<Reply> replyPage = replyRepository.findAllByCreatedByUserId(user.getId(), pageRequest);
         return convertToPaginatedResponse(replyPage);
     }

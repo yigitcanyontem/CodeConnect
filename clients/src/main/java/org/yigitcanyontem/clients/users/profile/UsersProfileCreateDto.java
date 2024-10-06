@@ -15,6 +15,7 @@ public class UsersProfileCreateDto {
     private String firstName;
     private String lastName;
     private String profilePictureUrl;
+    private String bannerPictureUrl;
     private String bio;
     private String city;
     private String country;

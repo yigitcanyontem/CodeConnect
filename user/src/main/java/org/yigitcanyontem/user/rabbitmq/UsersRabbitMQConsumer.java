@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 import org.yigitcanyontem.clients.shared.dto.GenericRabbitMQMessage;
-import org.yigitcanyontem.clients.shared.dto.GenericResponse;
 import org.yigitcanyontem.clients.users.dto.UserFollowDto;
 import org.yigitcanyontem.user.service.UsersProfileService;
 

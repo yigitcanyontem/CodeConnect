@@ -71,6 +71,7 @@ public class UsersProfileService {
         usersProfile.setFirstName(createDto.getFirstName());
         usersProfile.setLastName(createDto.getLastName());
         usersProfile.setProfilePictureUrl(createDto.getProfilePictureUrl());
+        usersProfile.setBannerPictureUrl(createDto.getBannerPictureUrl());
         usersProfile.setBio(createDto.getBio());
         usersProfile.setCity(createDto.getCity());
         usersProfile.setCountry(createDto.getCountry());
@@ -80,6 +81,8 @@ public class UsersProfileService {
         usersProfile.setLinkedinProfile(createDto.getLinkedinProfile());
         usersProfile.setGithubProfile(createDto.getGithubProfile());
         usersProfile.setMediumProfile(createDto.getMediumProfile());
+        usersProfile.setFollowersCount(0);
+        usersProfile.setFollowingCount(0);
         return usersProfile;
     }
 
@@ -119,8 +122,8 @@ public class UsersProfileService {
                 .linkedinProfile(usersProfile.getLinkedinProfile())
                 .githubProfile(usersProfile.getGithubProfile())
                 .mediumProfile(usersProfile.getMediumProfile())
-                .followersCount(usersProfile.getFollowersCount())
-                .followingCount(usersProfile.getFollowingCount())
+                .followersCount(usersProfile.getFollowersCount() != null ? usersProfile.getFollowersCount() : 0)
+                .followingCount(usersProfile.getFollowingCount() != null ? usersProfile.getFollowingCount() : 0)
                 .build();
     }
 
@@ -151,16 +154,4 @@ public class UsersProfileService {
         }
     }
 
-    public void saveNewUsersProfile(Users user) {
-        usersProfileRepository.save(
-                UsersProfile.builder()
-                        .usersId(user)
-                        .followersCount(0)
-                        .followingCount(0)
-                        .createdAt(user.getCreatedAt())
-                        .bio("Hello, I am a new user")
-                        .build()
-        );
-
-    }
 }
